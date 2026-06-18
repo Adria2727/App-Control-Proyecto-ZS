@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 export const dynamic = "force-dynamic";
 
 type BomLine = {
-  qty: number;
+  quantity: number;
   component: {
     name: string;
     cost_unitari: number;
@@ -27,7 +27,7 @@ function fmt(n: number) {
 export default async function MargesPage() {
   const { data, error } = await supabase
     .from("products")
-    .select(`id, code, name, tenant_id, family, bom(qty, component:components(name, cost_unitari, category_code))`)
+    .select(`id, code, name, tenant_id, family, bom(quantity, component:components(name, cost_unitari, category_code))`)
     .eq("bom_active", true)
     .order("tenant_id")
     .order("name");
@@ -110,12 +110,12 @@ export default async function MargesPage() {
                         <tbody>
                           {lines.map((line, idx) => {
                             if (!line.component) return null;
-                            const subtotal = line.qty * line.component.cost_unitari;
+                            const subtotal = line.quantity * line.component.cost_unitari;
                             const missing = line.component.cost_unitari === 0;
                             return (
                               <tr key={idx} className={`border-t border-[var(--border)] ${missing ? "text-amber-600" : ""}`}>
                                 <td className="py-1 pr-2">{line.component.name}</td>
-                                <td className="py-1 text-center tabular-nums">{line.qty}</td>
+                                <td className="py-1 text-center tabular-nums">{line.quantity}</td>
                                 <td className="py-1 text-right tabular-nums">
                                   {missing ? <span className="italic">pendent</span> : fmt(line.component.cost_unitari)}
                                 </td>
