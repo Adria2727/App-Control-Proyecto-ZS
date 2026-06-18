@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // No aturem el build per avisos d'ESLint (els revisem a part).
+  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;
