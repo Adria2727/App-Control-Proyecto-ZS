@@ -16,6 +16,8 @@ const nav = [
   { href: "/inventari", label: "Inventari" },
   { href: "/productes", label: "Productes" },
   { href: "/alertes", label: "Alertes" },
+  { href: "/marges", label: "Marges" },
+  { href: "/finances", label: "Finances" },
 ];
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

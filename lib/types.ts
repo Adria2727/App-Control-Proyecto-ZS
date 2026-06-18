@@ -23,6 +23,37 @@ export interface Product {
   sold_on_web: boolean;
 }
 
+export interface InvoiceOut {
+  id: number;
+  invoice_number: string;
+  invoice_date: string;
+  client: string;
+  base_amount: number;
+  vat_pct: number;
+  vat_amount: number;
+  total_amount: number;
+  due_date: string | null;
+  paid_date: string | null;
+  status: "pending" | "paid" | "overdue" | "partial";
+  notes: string | null;
+}
+
+export interface InvoiceIn {
+  id: number;
+  invoice_number: string;
+  invoice_date: string;
+  supplier: string;
+  category: string;
+  base_amount: number;
+  vat_pct: number;
+  vat_amount: number;
+  total_amount: number;
+  due_date: string | null;
+  paid_date: string | null;
+  status: "pending" | "paid" | "overdue" | "partial";
+  notes: string | null;
+}
+
 export interface Color {
   id: number;
   tenant_id: Tenant;
