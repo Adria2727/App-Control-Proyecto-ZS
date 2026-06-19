@@ -120,7 +120,7 @@ Fàbrica de sofàs modulars amb **2 marques (tenants)**:
 ### BUMBBA — RETAIL (bumbba.com, EUR, IVA inclòs)
 1 seater 322–484 · 2 seater 661,50–758,10 · 3 seater 696,50–793,80 · Chaise S/M/B 1176,70/1189,30/1249,50 (fins 1334,90) · Corner S/M/B 1313,90/1352,40/1452,50 (fins 1522,50) · Wonderwall 518 · Stand by me 594,30 · Prelude 625,80 · Feeling Good 549,50 · Pouf 290,50 · Mattress 230,30 · L-pieces 116,20 · Arms 98 · Arm cushion 31,50 · Back cushion 76,30 · Extra Covers 258,30–608,30
 
-### BUMBBA — PROPOSTA (fabricació/majorista, = full PROPOSTA PREUS TARRACO)
+### BUMBBA — PROPOSTA (fabricació/majorista)
 | Model | 80 | 90 |
 |-------|----|----|
 | 3 Seater 190 | 292,80 | 309,60 |
@@ -140,21 +140,7 @@ Components proposta: Coixí gran 25,75 · Coixí mitjà/petit 12,00 · L individ
 
 ---
 
-## 7. Proveïdor tèxtil — TARRACÓ
-
-Tarraco Confort Upholstery SL · www.tarraco.eu · +34 679 983 822
-Comercial: m.marti@tarraco.eu (M. Martí Jr.) · Compres: a.rodriguez@tarraco.eu
-
-Subministra **FUNDES (pana/tela) + FARCITS** de BUMBBA **i** SUNBBA (fundes PC04/PC37/PC82/PC99). Camions compartits **10 m³** des de Polònia → Tarragona. L'espai lliure es completa amb **potes i bosses al buit** (altres proveïdors, **NO** compten contra els 10 m³).
-
-**Comanda enviada** (tarraco_order 2026-04-08, 2 camions, marge +15%, corner +20%):
-- Camió #1 (22 Abr 2026, 679 u, 9,996/10 m³)
-- Camió #2 (15 Mai 2026, 707 u, 9,812/10 m³)
-- Vendes que la justifiquen: Març '26 = 68u (63% Light Green) · Abril '26 = 19u. Velocitat ~34 LG/setmana orgànic, projecció ~45 amb ads.
-
----
-
-## 8. Què ha de mostrar la app
+## 7. Què ha de mostrar la app
 
 - **Inventari** per tenant i categoria (stock actual per SKU/color).
 - **Entrades i sortides** de materials (moviments).
@@ -163,4 +149,3 @@ Subministra **FUNDES (pana/tela) + FARCITS** de BUMBBA **i** SUNBBA (fundes PC04
 - **Marges**: preu proposta − cost components per producte.
 - **Alertes Sunbba**: SKU a 0 (buits de model).
 - **Dashboards** agregats (vista Nubba = Bumbba + Sunbba).
-- **Comandes a proveïdor** (Tarracó): seguiment camions, m³, colors.
