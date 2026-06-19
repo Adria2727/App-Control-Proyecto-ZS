@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { InvoiceOut, InvoiceIn } from "@/lib/types";
+import InvoiceUploadModal from "@/components/InvoiceUploadModal";
 
 export const dynamic = "force-dynamic";
 
@@ -82,9 +83,12 @@ export default async function FinancesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Finances</h1>
-        <p className="text-[var(--muted)] text-sm">Control de tresoreria i facturació — Projecte Zero Stock</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Finances</h1>
+          <p className="text-[var(--muted)] text-sm">Control de tresoreria i facturació — Projecte Zero Stock</p>
+        </div>
+        <InvoiceUploadModal />
       </div>
 
       {/* ── KPIs ingressos / despeses ── */}
