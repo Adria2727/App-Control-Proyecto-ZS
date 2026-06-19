@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { normalizeInvoices } from "@/lib/invoice-utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -71,15 +72,16 @@ export async function POST(req: NextRequest) {
 
     const dataContext = `
 === DADES EN TEMPS REAL (avui ${TODAY}) ===
+NOTA: Totes les factures amb data de venciment ≤ avui es consideren pagades automàticament.
 
 --- COMPONENTS I STOCK ---
 ${JSON.stringify(components ?? [], null, 2)}
 
 --- FACTURES DE VENDA (invoices_out) ---
-${JSON.stringify(invoicesOut ?? [], null, 2)}
+${JSON.stringify(normalizeInvoices(invoicesOut ?? []), null, 2)}
 
 --- FACTURES DE COMPRA (invoices_in) ---
-${JSON.stringify(invoicesIn ?? [], null, 2)}
+${JSON.stringify(normalizeInvoices(invoicesIn ?? []), null, 2)}
 
 --- PRODUCTES I BOM ---
 ${JSON.stringify(products ?? [], null, 2)}

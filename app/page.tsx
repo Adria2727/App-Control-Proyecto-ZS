@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { normalizeInvoices } from "@/lib/invoice-utils";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +23,8 @@ async function getData() {
     supabase.from("components").select("stock_actual,cost_unitari,tenant_id,name,color_code"),
   ]);
   return {
-    out: outData ?? [],
-    inn: inData ?? [],
+    out: normalizeInvoices(outData ?? []),
+    inn: normalizeInvoices(inData ?? []),
     comps: comps ?? [],
   };
 }

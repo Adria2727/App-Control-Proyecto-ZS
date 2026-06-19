@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { InvoiceOut, InvoiceIn } from "@/lib/types";
+import { normalizeInvoices } from "@/lib/invoice-utils";
 import InvoiceUploadModal from "@/components/InvoiceUploadModal";
 
 export const dynamic = "force-dynamic";
@@ -51,8 +52,8 @@ export default async function FinancesPage() {
     supabase.from("invoices_in").select("*").order("due_date"),
   ]);
 
-  const invoicesOut = (outData ?? []) as InvoiceOut[];
-  const invoicesIn  = (inData  ?? []) as InvoiceIn[];
+  const invoicesOut = normalizeInvoices((outData ?? []) as InvoiceOut[]);
+  const invoicesIn  = normalizeInvoices((inData  ?? []) as InvoiceIn[]);
 
   // ── Càlculs ingressos ──────────────────────────────────────────────
   const totalFacturat     = invoicesOut.reduce((s, i) => s + i.total_amount, 0);
