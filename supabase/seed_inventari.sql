@@ -18,7 +18,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_NUCLI_PVC',    'Nucli Pouf Light Green',   'BUMBBA', 'ALTRES', 'PVC',  16, 0),
 ('BB_NUCLI_PGC',    'Nucli Pouf Arctic Sand',   'BUMBBA', 'ALTRES', 'PGC',  32, 0),
 ('BB_NUCLI_PGO',    'Nucli Pouf Shadow Grey',   'BUMBBA', 'ALTRES', 'PGO',  30, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- FUNDES / TELA (TELA)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -47,7 +47,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_FUN_POUF_PGC',    'Funda Pouf Arctic Sand',             'BUMBBA', 'TELA', 'PGC',  10, 0),
 ('BB_FUN_POUF_PGO',    'Funda Pouf Shadow Grey',             'BUMBBA', 'TELA', 'PGO',  10, 0),
 ('BB_FUN_INT_POUF',    'Funda Interior Pouf',                'BUMBBA', 'TELA', NULL,    0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- ESTRUCTURES "L" i BRAÇOS (ESTRUCTURES)
 -- Color codes L: VC=Light Green · GC=Arctic Sand · GO=Shadow Grey · GR=Dark Grey · BG=Beige
@@ -65,7 +65,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_BRAC_VC',   'Braç Light Green',     'BUMBBA', 'ESTRUCTURES', 'VC',  24, 0),
 ('BB_BRAC_GC',   'Braç Arctic Sand',     'BUMBBA', 'ESTRUCTURES', 'GC',  22, 0),
 ('BB_BRAC_GO',   'Braç Shadow Grey',     'BUMBBA', 'ESTRUCTURES', 'GO',  20, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- MATALASSOS (MATALASSOS)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -75,13 +75,13 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_MAT160_PVC', 'Matalàs 160 Light Green',   'BUMBBA', 'MATALASSOS', 'PVC', 17, 0),
 ('BB_MAT160_PGC', 'Matalàs 160 Arctic Sand',   'BUMBBA', 'MATALASSOS', 'PGC', 17, 0),
 ('BB_MAT160_PGO', 'Matalàs 160 Shadow Grey',   'BUMBBA', 'MATALASSOS', 'PGO', 21, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- POTES (PATES)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
 ('BB_POT_BL', 'Potes Blanques', 'BUMBBA', 'PATES', NULL, 304, 0),
 ('BB_POT_NG', 'Potes Negres',   'BUMBBA', 'PATES', NULL, 408, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- EMBALATGE
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -93,7 +93,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_MAN_EN',     'Manual BUMBBA (EN)', 'BUMBBA', 'EMBALATGE', NULL,  190, 0),
 ('BB_MAN_BASE',   'Manual BUMBBA (base)','BUMBBA','EMBALATGE', NULL,  -74, 0),
 ('BB_MAN_POUF',   'Manual Pouf/Braços', 'BUMBBA', 'EMBALATGE', NULL,    0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- COIXINS MUNTATS — buffer KANBAN (normalment 0)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -109,7 +109,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('BB_COI_RAC_PVC', 'Coixí Rinconera Muntat Light Green', 'BUMBBA', 'COIXINS', 'PVC', 0, 0),
 ('BB_COI_RAC_PGC', 'Coixí Rinconera Muntat Arctic Sand', 'BUMBBA', 'COIXINS', 'PGC', 0, 0),
 ('BB_COI_RAC_PGO', 'Coixí Rinconera Muntat Shadow Grey', 'BUMBBA', 'COIXINS', 'PGO', 0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- ============================================================
 -- SUNBBA — COMPONENTS
@@ -144,7 +144,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_FUN_POUF_PC82', 'Funda Pouf Grey Stone',             'SUNBBA', 'TELA', 'PC82',  0, 0),
 ('SB_FUN_POUF_PC99', 'Funda Pouf Graphite Grey',          'SUNBBA', 'TELA', 'PC99',  0, 0),
 ('SB_FUN_INT_POUF',  'Funda Interior Pouf',               'SUNBBA', 'TELA', NULL,    0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- NUCLIS POUF + COLA (ALTRES)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -153,7 +153,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_NUCLI_PC82', 'Nucli Pouf Grey Stone',     'SUNBBA', 'ALTRES', 'PC82',  0, 0),
 ('SB_NUCLI_PC99', 'Nucli Pouf Graphite Grey',  'SUNBBA', 'ALTRES', 'PC99',  2, 0),
 ('SB_HOTGLUE',    'Cola calenta',              'SUNBBA', 'ALTRES', NULL,   -4, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- ESTRUCTURES "L" (ESTRUCTURES)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -165,7 +165,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_L_PT_PC37', 'L Petita Green Olive',     'SUNBBA', 'ESTRUCTURES', 'PC37',  0, 0),
 ('SB_L_PT_PC82', 'L Petita Grey Stone',      'SUNBBA', 'ESTRUCTURES', 'PC82',  0, 0),
 ('SB_L_PT_PC99', 'L Petita Graphite Grey',   'SUNBBA', 'ESTRUCTURES', 'PC99',  0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- MATALASSOS (MATALASSOS)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -177,13 +177,13 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_MAT160_PC37', 'Matalàs 160 Green Olive',    'SUNBBA', 'MATALASSOS', 'PC37',  2, 0),
 ('SB_MAT160_PC82', 'Matalàs 160 Grey Stone',     'SUNBBA', 'MATALASSOS', 'PC82',  0, 0),
 ('SB_MAT160_PC99', 'Matalàs 160 Graphite Grey',  'SUNBBA', 'MATALASSOS', 'PC99',  2, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- POTES (PATES)
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
 ('SB_POT_BL', 'Potes Blanques', 'SUNBBA', 'PATES', NULL, -24, 0),
 ('SB_POT_NG', 'Potes Negres',   'SUNBBA', 'PATES', NULL,   0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- EMBALATGE
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -192,7 +192,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_MAN',        'Manual SUNBBA',  'SUNBBA', 'EMBALATGE', NULL,  -2, 0),
 ('SB_ETI',        'Etiqueta SUNBBA','SUNBBA', 'EMBALATGE', NULL,  -4, 0),
 ('SB_BOSSA',      'Bossa al buit',  'SUNBBA', 'EMBALATGE', NULL,   0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
 
 -- COIXINS MUNTATS — buffer KANBAN
 INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_actual, cost_unitari) VALUES
@@ -208,4 +208,4 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 ('SB_COI_PT_PC37', 'Coixí Petit Muntat Green Olive',   'SUNBBA', 'COIXINS', 'PC37', 0, 0),
 ('SB_COI_PT_PC82', 'Coixí Petit Muntat Grey Stone',    'SUNBBA', 'COIXINS', 'PC82', 0, 0),
 ('SB_COI_PT_PC99', 'Coixí Petit Muntat Graphite Grey', 'SUNBBA', 'COIXINS', 'PC99', 0, 0)
-ON CONFLICT (sku) DO UPDATE SET stock_actual = EXCLUDED.stock_actual;
+
