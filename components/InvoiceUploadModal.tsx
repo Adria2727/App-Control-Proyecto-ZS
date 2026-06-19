@@ -58,39 +58,35 @@ export default function InvoiceUploadModal() {
     setStep("saving");
     setError(null);
 
-    const table = type === "in" ? "invoices_in" : "invoices_out";
-    const row = type === "in"
-      ? {
-          invoice_number: parsed.invoice_number,
-          invoice_date:   parsed.invoice_date,
-          supplier:       parsed.supplier,
-          category:       parsed.category,
-          base_amount:    parsed.base_amount,
-          vat_pct:        parsed.vat_pct ?? 21,
-          vat_amount:     parsed.vat_amount,
-          total_amount:   parsed.total_amount,
-          due_date:       parsed.due_date ?? null,
-          status:         "pending",
-          notes:          parsed.notes ?? null,
-        }
-      : {
-          invoice_number: parsed.invoice_number,
-          invoice_date:   parsed.invoice_date,
-          client:         parsed.client,
-          base_amount:    parsed.base_amount,
-          vat_pct:        parsed.vat_pct ?? 21,
-          vat_amount:     parsed.vat_amount,
-          total_amount:   parsed.total_amount,
-          due_date:       parsed.due_date ?? null,
-          status:         "pending",
-          notes:          parsed.notes ?? null,
-        };
-
-    const { error: dbErr } = await supabase.from(table).insert(row);
-    if (dbErr) {
-      setError(dbErr.message);
-      setStep("error");
-      return;
+    if (type === "in") {
+      const { error: dbErr } = await supabase.from("invoices_in").insert({
+        invoice_number: parsed.invoice_number,
+        invoice_date:   parsed.invoice_date,
+        supplier:       parsed.supplier,
+        category:       parsed.category,
+        base_amount:    parsed.base_amount,
+        vat_pct:        parsed.vat_pct ?? 21,
+        vat_amount:     parsed.vat_amount,
+        total_amount:   parsed.total_amount,
+        due_date:       parsed.due_date ?? null,
+        status:         "pending",
+        notes:          parsed.notes ?? null,
+      });
+      if (dbErr) { setError(dbErr.message); setStep("error"); return; }
+    } else {
+      const { error: dbErr } = await supabase.from("invoices_out").insert({
+        invoice_number: parsed.invoice_number,
+        invoice_date:   parsed.invoice_date,
+        client:         parsed.client,
+        base_amount:    parsed.base_amount,
+        vat_pct:        parsed.vat_pct ?? 21,
+        vat_amount:     parsed.vat_amount,
+        total_amount:   parsed.total_amount,
+        due_date:       parsed.due_date ?? null,
+        status:         "pending",
+        notes:          parsed.notes ?? null,
+      });
+      if (dbErr) { setError(dbErr.message); setStep("error"); return; }
     }
     setStep("done");
   }

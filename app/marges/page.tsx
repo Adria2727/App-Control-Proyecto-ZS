@@ -68,7 +68,7 @@ export default async function MargesPage() {
                 const missingCost = lines.filter(l => l.component && l.component.cost_unitari === 0);
                 const totalCost = lines.reduce((sum, l) => {
                   if (!l.component) return sum;
-                  return sum + l.qty * l.component.cost_unitari;
+                  return sum + l.quantity * l.component.cost_unitari;
                 }, 0);
 
                 return (
