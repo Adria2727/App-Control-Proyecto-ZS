@@ -80,6 +80,11 @@ export default function InvoiceUploadModal() {
   const [lineMappedSku2, setLineMappedSku2] = useState<string[]>([]);
   const [lineHasSecond, setLineHasSecond]   = useState<boolean[]>([]);
 
+  // Vinculació albarà
+  const [linkedDnId, setLinkedDnId]         = useState<number | null>(null);
+  const [linkedDnNumber, setLinkedDnNumber] = useState<string>("");
+  const [suggestedDns, setSuggestedDns]     = useState<{id:number;number:string;supplier:string;note_date:string}[]>([]);
+
   // Dades per al selector de línies
   const [allComponents, setAllComponents] = useState<ComponentOption[]>([]);
   const [allProducts, setAllProducts]     = useState<ProductOption[]>([]);
@@ -93,6 +98,7 @@ export default function InvoiceUploadModal() {
     setOutLines([]); setParsedLines([]); setLineChecked([]); setLineMappedSku([]);
     setLineMappedSku2([]); setLineHasSecond([]);
     setLineQty(1); setLineProd(null);
+    setLinkedDnId(null); setLinkedDnNumber(""); setSuggestedDns([]);
     if (fileRef.current) fileRef.current.value = "";
   }
   function close() { setOpen(false); reset(); }
@@ -151,8 +157,20 @@ export default function InvoiceUploadModal() {
       const res = await fetch("/api/parse-invoice", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error ?? "Error al parsejar");
-      setParsed(json.data);
+      const data = json.data;
+      setParsed(data);
       setStep("review");
+
+      // Cercar albarans vinculables (per número o per proveïdor)
+      if (type === "in" && data.supplier) {
+        const { data: dns } = await supabase
+          .from("delivery_notes")
+          .select("id,number,supplier,note_date")
+          .eq("status", "pending_invoice")
+          .or(`number.eq.${data.invoice_number ?? ""},supplier.ilike.%${data.supplier}%`)
+          .limit(5);
+        if (dns && dns.length > 0) setSuggestedDns(dns);
+      }
     } catch (err: any) {
       setError(err.message);
       setStep("error");
@@ -187,7 +205,18 @@ export default function InvoiceUploadModal() {
         }).select("id").single();
         if (dbErr) throw new Error(dbErr.message);
 
-        if (withInventory) {
+        // Vincular albarà si n'hi ha un seleccionat
+        if (linkedDnId) {
+          await supabase.from("delivery_notes").update({
+            status: "invoiced",
+            invoice_in_id: inv!.id,
+          }).eq("id", linkedDnId);
+          await supabase.from("invoices_in").update({
+            delivery_note_id: linkedDnId,
+          }).eq("id", inv!.id);
+        }
+
+        if (withInventory && !linkedDnId) {
           // Agrupar línies marcades per SKU → sumar quantitats (suporta 2 SKUs per línia)
           const grouped: Record<string, number> = {};
           parsedLines.forEach((l, i) => {
@@ -367,6 +396,36 @@ export default function InvoiceUploadModal() {
                       <div className="pt-1 border-t border-[var(--border)] text-xs text-[var(--muted)]">{parsed.notes}</div>
                     )}
                   </div>
+
+                  {/* Vinculació albarà (només IN) */}
+                  {type === "in" && (
+                    <div className="bg-[var(--background)] rounded-xl p-3 space-y-2 text-sm">
+                      <p className="font-medium text-xs uppercase tracking-wide text-[var(--muted)]">Albarà relacionat</p>
+                      {suggestedDns.length > 0 && !linkedDnId && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-[var(--muted)]">Albarans pendents del mateix proveïdor:</p>
+                          {suggestedDns.map(dn => (
+                            <button key={dn.id}
+                              onClick={() => { setLinkedDnId(dn.id); setLinkedDnNumber(dn.number); }}
+                              className="w-full text-left px-3 py-1.5 rounded-lg border border-[var(--border)] hover:bg-[var(--card)] text-xs"
+                            >
+                              <span className="font-mono font-medium">{dn.number}</span>
+                              <span className="text-[var(--muted)] ml-2">{dn.supplier} · {dn.note_date}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {linkedDnId ? (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-green-600 font-medium">✓ Vinculat a albarà <span className="font-mono">{linkedDnNumber}</span> — no mourà stock</span>
+                          <button onClick={() => { setLinkedDnId(null); setLinkedDnNumber(""); }} className="text-xs text-[var(--muted)] underline">Desvincular</button>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-[var(--muted)] italic">Sense albarà — la factura mourà stock.</p>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex gap-2">
                     <button onClick={reset}
                       className="flex-1 px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--muted)] hover:text-[var(--foreground)]">

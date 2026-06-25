@@ -1,8 +1,10 @@
 import { supabase } from "@/lib/supabase";
-import { InvoiceOut, InvoiceIn } from "@/lib/types";
+import { InvoiceOut, InvoiceIn, DeliveryNote } from "@/lib/types";
 import { normalizeInvoices } from "@/lib/invoice-utils";
 import InvoiceUploadModal from "@/components/InvoiceUploadModal";
 import InvoicesInTable from "@/components/InvoicesInTable";
+import DeliveryNoteModal from "@/components/DeliveryNoteModal";
+import DeliveryNotesTable from "@/components/DeliveryNotesTable";
 
 export const dynamic = "force-dynamic";
 
@@ -48,10 +50,15 @@ function KpiCard({ label, value, sub, color }: { label: string; value: number; s
 }
 
 export default async function FinancesPage() {
-  const [{ data: outData }, { data: inData }] = await Promise.all([
+  const [{ data: outData }, { data: inData }, { data: dnData }, { data: compData }] = await Promise.all([
     supabase.from("invoices_out").select("*").order("invoice_date"),
     supabase.from("invoices_in").select("*").order("due_date"),
+    supabase.from("delivery_notes").select("*").order("note_date", { ascending: false }),
+    supabase.from("components").select("id,sku,name,tenant_id"),
   ]);
+
+  const deliveryNotes = (dnData ?? []) as DeliveryNote[];
+  const components = (compData ?? []) as { id: number; sku: string; name: string; tenant_id: string }[];
 
   const invoicesOut = normalizeInvoices((outData ?? []) as InvoiceOut[]);
   const invoicesIn  = normalizeInvoices((inData  ?? []) as InvoiceIn[]);
@@ -90,7 +97,10 @@ export default async function FinancesPage() {
           <h1 className="text-2xl font-bold">Finances</h1>
           <p className="text-[var(--muted)] text-sm">Control de tresoreria i facturació — Projecte Zero Stock</p>
         </div>
-        <InvoiceUploadModal />
+        <div className="flex gap-2">
+          <DeliveryNoteModal components={components} />
+          <InvoiceUploadModal />
+        </div>
       </div>
 
       {/* ── KPIs ingressos / despeses ── */}
@@ -213,6 +223,9 @@ export default async function FinancesPage() {
           </div>
         )}
       </div>
+
+      {/* ── Albarans ── */}
+      <DeliveryNotesTable notes={deliveryNotes} />
 
       {/* ── Factures rebudes ── */}
       <InvoicesInTable

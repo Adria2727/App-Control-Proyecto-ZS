@@ -59,6 +59,34 @@ Regles per suggested_sku:
 
 No afegeixis res fora del JSON.`;
 
+const PROMPT_ALBARA = `Ets un assistent que extreu dades d'albarans de compra en format JSON per a una fàbrica de sofàs.
+Analitza el PDF i retorna NOMÉS un JSON vàlid (sense markdown) amb exactament aquests camps:
+{
+  "number": "número d'albarà",
+  "note_date": "YYYY-MM-DD",
+  "supplier": "string",
+  "base_amount": número o null si no apareix,
+  "notes": "string breu (màx 100 car.) o null",
+  "line_items": [
+    {
+      "supplier_code": "codi producte del proveïdor o null",
+      "description": "descripció de la línia",
+      "quantity": número,
+      "unit": "u|m|kg|altres",
+      "unit_price": número o null,
+      "amount": número o null,
+      "to_inventory": true si és un component físic en unitats senceres que entra a magatzem,
+      "suggested_sku": "SKU del component més probable de la llista, o null"
+    }
+  ]
+}
+
+Llista de components disponibles per fer el suggested_sku:
+${COMPONENT_LIST}
+
+Aplica les mateixes regles de suggested_sku que per les factures de compra.
+No afegeixis res fora del JSON.`;
+
 const PRODUCT_LIST = `
 BUMBBA: BUM_3S=3 Seater 190x80, BUM_CHL=Chaiselong 190x80, BUM_CRN=Corner 190x80, BUM_PLAIN=Plain 190x80, BUM_SBYME=Stand By Me 190x80, BUM_FG=Feeling Good 80, BUM_WW=Wonderwall 190x80, BUM_PUF=Pouf 80x80
 SUNBBA: SUN_3S=3 Seater 190x80, SUN_CHL=Chaiselong 190x80, SUN_CRN=Corner 190x80, SUN_PLAIN=Plain 190x80, SUN_PUF=Pouf 80x80
@@ -121,6 +149,8 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
 
+    const prompt = type === "in" ? PROMPT_IN : type === "albara" ? PROMPT_ALBARA : PROMPT_OUT;
+
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 4096,
@@ -132,7 +162,7 @@ export async function POST(req: NextRequest) {
               type: "document",
               source: { type: "base64", media_type: "application/pdf", data: base64 },
             },
-            { type: "text", text: type === "in" ? PROMPT_IN : PROMPT_OUT },
+            { type: "text", text: prompt },
           ],
         },
       ],

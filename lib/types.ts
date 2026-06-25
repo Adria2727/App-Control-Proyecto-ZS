@@ -54,6 +54,18 @@ export interface InvoiceIn {
   notes: string | null;
 }
 
+export interface DeliveryNote {
+  id: number;
+  number: string;
+  supplier: string;
+  note_date: string;
+  status: "pending_invoice" | "invoiced";
+  invoice_in_id: number | null;
+  base_amount: number | null;
+  notes: string | null;
+  created_at: string;
+}
+
 export interface Color {
   id: number;
   tenant_id: Tenant;
