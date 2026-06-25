@@ -3,6 +3,13 @@
 import { useMemo, useState } from "react";
 import { Component } from "@/lib/types";
 
+const COLOR_NAMES: Record<string, string> = {
+  PVC: "Light Green", PGC: "Arctic Sand", PGO: "Shadow Grey",
+  GR: "Dark Grey", BG: "Beige",
+  PC04: "Light Ivory", PC37: "Green Olive", PC82: "Grey Stone", PC99: "Graphite Grey",
+  VC: "Light Green", GC: "Arctic Sand", GO: "Shadow Grey",
+};
+
 export default function InventoryTable({ components }: { components: Component[] }) {
   const [tenant, setTenant] = useState<string>("ALL");
   const [category, setCategory] = useState<string>("ALL");
@@ -75,7 +82,9 @@ export default function InventoryTable({ components }: { components: Component[]
                     {c.tenant_id === "BUMBBA" ? "Bumbba" : "Sunbba"}
                   </span>
                 </td>
-                <td className="px-3 py-2 font-medium">{c.name}</td>
+                <td className="px-3 py-2 font-medium">
+                  {c.color_code ? `${c.name} ${COLOR_NAMES[c.color_code] ?? c.color_code}` : c.name}
+                </td>
                 <td className="px-3 py-2 text-[var(--muted)]">{c.category_code}</td>
                 <td className="px-3 py-2 text-[var(--muted)]">{c.color_code ?? "—"}</td>
                 <td className="px-3 py-2 text-[var(--muted)]">{c.station ?? "—"}</td>
