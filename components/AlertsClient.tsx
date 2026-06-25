@@ -22,27 +22,22 @@ export default function AlertsClient({
   noted: initNoted,
   overdueInvoices: initInvoices,
   lateNotes: initNotes,
-  unreadEcon: initUnread,
-  readEcon: initRead,
+  econAlerts,
 }: {
   negatives: ComponentWithNoted[];
   noted: ComponentWithNoted[];
   overdueInvoices: InvoiceIn[];
   lateNotes: DeliveryNote[];
-  unreadEcon: EconomicAlert[];
-  readEcon: EconomicAlert[];
+  econAlerts: EconomicAlert[];
 }) {
   const [negatives, setNegatives] = useState(initNeg);
   const [noted, setNoted]         = useState(initNoted);
   const [invoices, setInvoices]   = useState(initInvoices);
   const [notes, setNotes]         = useState(initNotes);
-  const [unread, setUnread]       = useState(initUnread);
-  const [read, setRead]           = useState(initRead);
+  const [dismissedEcon, setDismissedEcon] = useState<string[]>([]);
 
-  // Nova alerta econòmica
-  const [newTitle, setNewTitle] = useState("");
-  const [newBody, setNewBody]   = useState("");
-  const [saving, setSaving]     = useState(false);
+  const visibleEcon = econAlerts.filter(a => !dismissedEcon.includes(a.key));
+  const totalActive = negatives.length + invoices.length + notes.length + visibleEcon.length;
 
   async function markReordered(c: ComponentWithNoted) {
     await supabase.from("components").update({ reorder_noted: true }).eq("id", c.id);
@@ -60,22 +55,6 @@ export default function AlertsClient({
     setNotes(prev => prev.filter(x => x.id !== n.id));
   }
 
-  async function markRead(a: EconomicAlert) {
-    await supabase.from("economic_alerts").update({ read_at: new Date().toISOString() }).eq("id", a.id);
-    setUnread(prev => prev.filter(x => x.id !== a.id));
-    setRead(prev => [{ ...a, read_at: new Date().toISOString() }, ...prev]);
-  }
-
-  async function createAlert() {
-    if (!newTitle.trim()) return;
-    setSaving(true);
-    const { data } = await supabase.from("economic_alerts").insert({ title: newTitle, body: newBody || null }).select().single();
-    if (data) setUnread(prev => [data as EconomicAlert, ...prev]);
-    setNewTitle(""); setNewBody(""); setSaving(false);
-  }
-
-  const totalActive = negatives.length + invoices.length + notes.length + unread.length;
-
   return (
     <div className="space-y-6">
       <div>
@@ -88,8 +67,28 @@ export default function AlertsClient({
             </span>
           )}
         </h1>
-        <p className="text-[var(--muted)] text-sm">Stock crític, factures vençudes, albarans pendents i avisos econòmics</p>
+        <p className="text-[var(--muted)] text-sm">Stock crític, factures vençudes, albarans pendents i indicadors econòmics</p>
       </div>
+
+      {/* ── Indicadors econòmics ── */}
+      <Section title={`Indicadors econòmics (${visibleEcon.length})`} color="#7c3aed" active={visibleEcon.length > 0}>
+        {visibleEcon.length === 0
+          ? <Empty text="Tots els indicadors econòmics estan bé" />
+          : visibleEcon.map(a => (
+            <Row key={a.key}>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full shrink-0"
+                    style={{ background: a.severity === "high" ? "var(--negative)" : "#d97706" }} />
+                  <span className="font-medium">{a.title}</span>
+                </div>
+                <p className="text-xs text-[var(--muted)] mt-0.5 ml-4">{a.body}</p>
+              </div>
+              <Btn onClick={() => setDismissedEcon(prev => [...prev, a.key])} color="#7c3aed">Llegit</Btn>
+            </Row>
+          ))
+        }
+      </Section>
 
       {/* ── Stock negatiu ── */}
       <Section title={`Stock negatiu (${negatives.length})`} color="#dc2626" active={negatives.length > 0}>
@@ -104,7 +103,7 @@ export default function AlertsClient({
                 <span className="font-medium">{c.name}</span>
                 <span className="ml-2 text-xs text-[var(--muted)]">{c.category_code}</span>
               </div>
-              <span className="tabular-nums font-bold text-[var(--negative)] mr-3">{c.stock_actual}</span>
+              <span className="tabular-nums font-bold mr-3" style={{ color: "var(--negative)" }}>{c.stock_actual}</span>
               <Btn onClick={() => markReordered(c)} color="#dc2626">Demanat</Btn>
             </Row>
           ))
@@ -114,8 +113,7 @@ export default function AlertsClient({
             <p className="text-xs text-[var(--muted)] mb-1">Ja demanats ({noted.length})</p>
             {noted.map(c => (
               <div key={c.id} className="text-xs text-[var(--muted)] py-0.5 flex justify-between">
-                <span>{c.name}</span>
-                <span>{c.stock_actual}</span>
+                <span>{c.name}</span><span>{c.stock_actual}</span>
               </div>
             ))}
           </div>
@@ -132,7 +130,7 @@ export default function AlertsClient({
                 <span className="font-medium">{inv.supplier}</span>
                 <span className="font-mono text-xs text-[var(--muted)] ml-2">{inv.invoice_number}</span>
                 {inv.due_date && (
-                  <span className="ml-2 text-xs text-[var(--negative)]">venc. {fmtDate(inv.due_date)}</span>
+                  <span className="ml-2 text-xs" style={{ color: "var(--negative)" }}>venc. {fmtDate(inv.due_date)}</span>
                 )}
               </div>
               <span className="tabular-nums font-semibold mr-3">{fmt(inv.total_amount)}</span>
@@ -153,63 +151,11 @@ export default function AlertsClient({
                 <span className="font-medium ml-2">{n.supplier}</span>
                 <span className="ml-2 text-xs text-[var(--muted)]">{fmtDate(n.note_date)}</span>
               </div>
-              <span className="text-xs text-amber-600 font-semibold mr-3">{daysSince(n.created_at)} dies</span>
+              <span className="text-xs font-semibold mr-3" style={{ color: "#d97706" }}>{daysSince(n.created_at)} dies</span>
               <Btn onClick={() => markInvoiced(n)} color="#b45309">Facturat</Btn>
             </Row>
           ))
         }
-      </Section>
-
-      {/* ── Alertes econòmiques ── */}
-      <Section title={`Avisos econòmics (${unread.length})`} color="#7c3aed" active={unread.length > 0}>
-        {/* Crear nova alerta */}
-        <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--background)] space-y-2">
-          <p className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wide">Nou avís</p>
-          <input
-            value={newTitle}
-            onChange={e => setNewTitle(e.target.value)}
-            placeholder="Títol de l'avís…"
-            className="select w-full text-sm"
-          />
-          <textarea
-            value={newBody}
-            onChange={e => setNewBody(e.target.value)}
-            placeholder="Descripció (opcional)…"
-            rows={2}
-            className="select w-full text-sm resize-none"
-          />
-          <button
-            onClick={createAlert}
-            disabled={!newTitle.trim() || saving}
-            className="px-3 py-1.5 text-xs font-semibold text-white rounded-lg disabled:opacity-50"
-            style={{ background: "#7c3aed" }}
-          >
-            {saving ? "Desant…" : "Afegir avís"}
-          </button>
-        </div>
-
-        {unread.length === 0
-          ? <Empty text="Cap avís econòmic pendent" />
-          : unread.map(a => (
-            <Row key={a.id}>
-              <div className="flex-1">
-                <span className="font-medium">{a.title}</span>
-                {a.body && <p className="text-xs text-[var(--muted)] mt-0.5">{a.body}</p>}
-                <span className="text-xs text-[var(--muted)] block mt-0.5">{fmtDate(a.created_at)}</span>
-              </div>
-              <Btn onClick={() => markRead(a)} color="#7c3aed">Llegit</Btn>
-            </Row>
-          ))
-        }
-
-        {read.length > 0 && (
-          <div className="px-4 py-2 border-t border-[var(--border)]">
-            <p className="text-xs text-[var(--muted)] mb-1">Llegits ({read.length})</p>
-            {read.map(a => (
-              <div key={a.id} className="text-xs text-[var(--muted)] py-0.5">{a.title}</div>
-            ))}
-          </div>
-        )}
       </Section>
     </div>
   );
@@ -219,7 +165,7 @@ function Section({ title, color, active, children }: { title: string; color: str
   return (
     <div className="bg-[var(--card)] border rounded-xl overflow-hidden" style={{ borderColor: active ? color : "var(--border)" }}>
       <div className="px-4 py-3 border-b border-[var(--border)] flex items-center gap-2"
-        style={{ background: active ? `${color}10` : undefined }}>
+        style={{ background: active ? `${color}15` : undefined }}>
         {active && <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />}
         <h2 className="font-semibold" style={{ color: active ? color : "var(--foreground)" }}>{title}</h2>
       </div>
@@ -237,13 +183,18 @@ function Empty({ text }: { text: string }) {
 }
 
 function Btn({ onClick, color, children }: { onClick: () => void; color: string; children: React.ReactNode }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      className="shrink-0 text-xs px-2.5 py-1 rounded-md font-medium border transition-colors hover:text-white"
-      style={{ borderColor: color, color }}
-      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = color; (e.currentTarget as HTMLButtonElement).style.color = "white"; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = color; }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="shrink-0 text-xs px-2.5 py-1 rounded-md font-medium border transition-colors"
+      style={{
+        borderColor: color,
+        color: hovered ? "white" : color,
+        background: hovered ? color : "transparent",
+      }}
     >
       {children}
     </button>
