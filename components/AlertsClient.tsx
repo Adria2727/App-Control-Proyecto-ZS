@@ -15,7 +15,17 @@ function fmt(n: number) {
   return n.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 }
 
-type ComponentWithNoted = Component & { reorder_noted: boolean };
+type ComponentWithNoted = Component & { reorder_noted: boolean; reorder_noted_at: string | null };
+
+const ECON_STORAGE_KEY = "econ_dismissed_v1";
+
+function loadDismissed(): Record<string, number> {
+  if (typeof window === "undefined") return {};
+  try { return JSON.parse(localStorage.getItem(ECON_STORAGE_KEY) ?? "{}"); } catch { return {}; }
+}
+function saveDismissed(d: Record<string, number>) {
+  localStorage.setItem(ECON_STORAGE_KEY, JSON.stringify(d));
+}
 
 export default function AlertsClient({
   negatives: initNeg,
@@ -34,15 +44,32 @@ export default function AlertsClient({
   const [noted, setNoted]         = useState(initNoted);
   const [invoices, setInvoices]   = useState(initInvoices);
   const [notes, setNotes]         = useState(initNotes);
-  const [dismissedEcon, setDismissedEcon] = useState<string[]>([]);
+
+  // Alertes econòmiques: filtrar les descartades fa menys de 5 dies
+  const FIVE_DAYS = 5 * 24 * 60 * 60 * 1000;
+  const [dismissed, setDismissed] = useState<Record<string, number>>(() => {
+    const d = loadDismissed();
+    const now = Date.now();
+    // Netejar les que fa més de 5 dies
+    return Object.fromEntries(Object.entries(d).filter(([, t]) => now - t < FIVE_DAYS));
+  });
+
+  const visibleEcon = econAlerts.filter(a => !dismissed[a.key]);
 
   const visibleEcon = econAlerts.filter(a => !dismissedEcon.includes(a.key));
   const totalActive = negatives.length + invoices.length + notes.length + visibleEcon.length;
 
+  function dismissEcon(key: string) {
+    const updated = { ...dismissed, [key]: Date.now() };
+    setDismissed(updated);
+    saveDismissed(updated);
+  }
+
   async function markReordered(c: ComponentWithNoted) {
-    await supabase.from("components").update({ reorder_noted: true }).eq("id", c.id);
+    const now = new Date().toISOString();
+    await supabase.from("components").update({ reorder_noted: true, reorder_noted_at: now }).eq("id", c.id);
     setNegatives(prev => prev.filter(x => x.id !== c.id));
-    setNoted(prev => [...prev, { ...c, reorder_noted: true }]);
+    setNoted(prev => [...prev, { ...c, reorder_noted: true, reorder_noted_at: now }]);
   }
 
   async function markPaid(inv: InvoiceIn) {
@@ -84,7 +111,7 @@ export default function AlertsClient({
                 </div>
                 <p className="text-xs text-[var(--muted)] mt-0.5 ml-4">{a.body}</p>
               </div>
-              <Btn onClick={() => setDismissedEcon(prev => [...prev, a.key])} color="#7c3aed">Llegit</Btn>
+              <Btn onClick={() => dismissEcon(a.key)} color="#7c3aed">Llegit</Btn>
             </Row>
           ))
         }

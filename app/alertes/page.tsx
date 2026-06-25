@@ -19,7 +19,7 @@ export default async function AlertesPage() {
     { data: dnData },
   ] = await Promise.all([
     supabase.from("components")
-      .select("id,sku,name,tenant_id,category_code,station,stock_actual,reorder_noted")
+      .select("id,sku,name,tenant_id,category_code,station,stock_actual,reorder_noted,reorder_noted_at")
       .lt("stock_actual", 0)
       .order("stock_actual"),
     supabase.from("invoices_in").select("*").order("due_date"),
@@ -29,8 +29,15 @@ export default async function AlertesPage() {
 
   const now = Date.now();
 
-  const negatives = ((compData ?? []) as (Component & { reorder_noted: boolean })[]).filter(c => !c.reorder_noted);
-  const noted     = ((compData ?? []) as (Component & { reorder_noted: boolean })[]).filter(c => c.reorder_noted);
+  const FIVE_DAYS = 5 * 24 * 60 * 60 * 1000;
+  const allComp = (compData ?? []) as (Component & { reorder_noted: boolean; reorder_noted_at: string | null })[];
+  // Mostrar si: mai demanat, o demanat fa més de 5 dies
+  const negatives = allComp.filter(c =>
+    !c.reorder_noted_at || (now - new Date(c.reorder_noted_at).getTime() > FIVE_DAYS)
+  );
+  const noted = allComp.filter(c =>
+    c.reorder_noted_at && (now - new Date(c.reorder_noted_at).getTime() <= FIVE_DAYS)
+  );
 
   const allIn  = (invoicesInData  ?? []) as InvoiceIn[];
   const allOut = (invoicesOutData ?? []) as InvoiceOut[];
