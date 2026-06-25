@@ -55,8 +55,6 @@ export default function AlertsClient({
   });
 
   const visibleEcon = econAlerts.filter(a => !dismissed[a.key]);
-
-  const visibleEcon = econAlerts.filter(a => !dismissedEcon.includes(a.key));
   const totalActive = negatives.length + invoices.length + notes.length + visibleEcon.length;
 
   function dismissEcon(key: string) {
