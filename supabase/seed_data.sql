@@ -38,39 +38,39 @@ delete from components;
 -- ============================================================================
 insert into components (sku, name, tenant_id, category_code, station, stock_actual) values
   -- TELA / FUNDES
-  ('FUN_CR',      'Funda Coixí Gran',        'BUMBBA','TELA',       'E3', 250),
-  ('FUN_MC',      'Funda Coixí Petit',       'BUMBBA','TELA',       'E3', 271),
-  ('FUN_CRM',     'Funda Coixí Mitjà',       'BUMBBA','TELA',       'E3',  37),
-  ('FUN_RAC',     'Funda Coixí Rinconera',   'BUMBBA','TELA',       'E3',  14),
-  ('FUN_M190',    'Funda Matalàs 190',       'BUMBBA','TELA',       'E1',  16),
-  ('FUN_M160',    'Funda Matalàs 160',       'BUMBBA','TELA',       'E1',  30),
-  ('FUN_BRZ',     'Funda Braç',              'BUMBBA','TELA',       'E1',  30),
-  ('FUN_PUF',     'Funda Pouf',              'BUMBBA','TELA',       'E1',  30),
+  ('FUN_CR',      'Funda Coixí Gran',        'BUMBBA','TELA',       'E3', 160),
+  ('FUN_MC',      'Funda Coixí Petit',       'BUMBBA','TELA',       'E3', 200),
+  ('FUN_CRM',     'Funda Coixí Mitjà',       'BUMBBA','TELA',       'E3',  25),
+  ('FUN_RAC',     'Funda Coixí Rinconera',   'BUMBBA','TELA',       'E3',  76),
+  ('FUN_M190',    'Funda Matalàs 190',       'BUMBBA','TELA',       'E1',   0),
+  ('FUN_M160',    'Funda Matalàs 160',       'BUMBBA','TELA',       'E1',   0),
+  ('FUN_BRZ',     'Funda Braç',              'BUMBBA','TELA',       'E1',   0),
+  ('FUN_PUF',     'Funda Pouf',              'BUMBBA','TELA',       'E1',   0),
   ('FUN_PUF_INT', 'Funda Interior Pouf',     'BUMBBA','TELA',       'E1',   0),
   -- FARCITS / ALTRES
-  ('FARCIT_GR',   'Farcit Gran',             'BUMBBA','ALTRES',     'E3', 250),
-  ('FARCIT_PT',   'Farcit Petit',            'BUMBBA','ALTRES',     'E3', 272),
-  ('FARCIT_CR_M', 'Farcit Mitjà',             'BUMBBA','ALTRES',     'E3',  37),
-  ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  14),
-  ('HOTGLUE',     'Cola Calenta',            'BUMBBA','ALTRES',      null, 300),
-  ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  78),
+  ('FARCIT_GR',   'Farcit Gran',             'BUMBBA','ALTRES',     'E3', 156),
+  ('FARCIT_PT',   'Farcit Petit',            'BUMBBA','ALTRES',     'E3', 390),
+  ('FARCIT_CR_M', 'Farcit Mitjà',             'BUMBBA','ALTRES',     'E3',  40),
+  ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  18),
+  ('HOTGLUE',     'Cola Calenta',            'BUMBBA','ALTRES',      null, 250),
+  ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  18),
   -- ESTRUCTURES
-  ('BRAC',  'Braç',     'BUMBBA','ESTRUCTURES','E1',  66),
+  ('BRAC',  'Braç',     'BUMBBA','ESTRUCTURES','E1',  28),
   -- MATALASSOS
-  ('MAT_190','Matalàs 190','BUMBBA','MATALASSOS','E1', 131),
-  ('MAT_160','Matalàs 160','BUMBBA','MATALASSOS','E1',  55),
+  ('MAT_190','Matalàs 190','BUMBBA','MATALASSOS','E1',  69),
+  ('MAT_160','Matalàs 160','BUMBBA','MATALASSOS','E1',  41),
   -- WIP
   ('POUF_ENF','Pouf Enfundat', 'BUMBBA','ALTRES',     'E1', 0),
   ('BRAC_ENF','Braç Enfundat', 'BUMBBA','ESTRUCTURES','E1', 0),
   -- EMBALATGE
-  ('CAJA_B',    'Caixa Bumbba',      'BUMBBA','EMBALATGE','E1',  260),
-  ('CAJA_PLAIN','Caixa Plain',       'BUMBBA','EMBALATGE','E1',  -16),
-  ('CAJA_PUF',  'Caixa Pouf',        'BUMBBA','EMBALATGE','E1',  -17),
-  ('MAN_ES',    'Manual Bumbba ES',  'BUMBBA','EMBALATGE','E0',  184),
-  ('MAN_EN',    'Manual Bumbba EN',  'BUMBBA','EMBALATGE','E0',  190),
-  ('MAN_BASE',  'Manual Bumbba Base','BUMBBA','EMBALATGE','E0',  -74),
+  ('CAJA_B',    'Caixa Bumbba',      'BUMBBA','EMBALATGE','E1',  200),
+  ('CAJA_PLAIN','Caixa Plain',       'BUMBBA','EMBALATGE','E1',    0),
+  ('CAJA_PUF',  'Caixa Pouf',        'BUMBBA','EMBALATGE','E1',    0),
+  ('MAN_ES',    'Manual Bumbba ES',  'BUMBBA','EMBALATGE','E0',    0),
+  ('MAN_EN',    'Manual Bumbba EN',  'BUMBBA','EMBALATGE','E0',    0),
+  ('MAN_BASE',  'Manual Bumbba Base','BUMBBA','EMBALATGE','E0',    0),
   ('MAN_PUF',   'Manual Pouf/Braços','BUMBBA','EMBALATGE','E0',    0),
-  ('ETIQ',      'Etiqueta Bumbba',   'BUMBBA','EMBALATGE','E0',    0)
+  ('ETIQ',      'Etiqueta Bumbba',   'BUMBBA','EMBALATGE','E0',  700)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
@@ -80,31 +80,32 @@ on conflict (tenant_id, sku) do update
 -- ============================================================================
 insert into components (sku, name, tenant_id, category_code, station, stock_actual) values
   -- TELA / FUNDES
-  ('FUN_CR',      'Funda Coixí Gran',    'SUNBBA','TELA','E3', 158),
-  ('FUN_MC',      'Funda Coixí Petit',   'SUNBBA','TELA','E3',  80),
-  ('FUN_CRM',     'Funda Coixí Mitjà',   'SUNBBA','TELA','E3',  42),
-  ('FUN_M190',    'Funda Matalàs 190',   'SUNBBA','TELA','E1',   0),
-  ('FUN_M160',    'Funda Matalàs 160',   'SUNBBA','TELA','E1',   0),
-  ('FUN_PUF',     'Funda Pouf',          'SUNBBA','TELA','E1',   0),
-  ('FUN_PUF_INT', 'Funda Interior Pouf', 'SUNBBA','TELA','E1',   0),
+  ('FUN_CR',      'Funda Coixí Gran',      'SUNBBA','TELA','E3', 118),
+  ('FUN_MC',      'Funda Coixí Petit',     'SUNBBA','TELA','E3',  80),
+  ('FUN_CRM',     'Funda Coixí Mitjà',     'SUNBBA','TELA','E3',  42),
+  ('FUN_RAC',     'Funda Coixí Rinconera', 'SUNBBA','TELA','E3',  86),
+  ('FUN_M190',    'Funda Matalàs 190',     'SUNBBA','TELA','E1',   0),
+  ('FUN_M160',    'Funda Matalàs 160',     'SUNBBA','TELA','E1',   0),
+  ('FUN_PUF',     'Funda Pouf',            'SUNBBA','TELA','E1',   0),
+  ('FUN_PUF_INT', 'Funda Interior Pouf',   'SUNBBA','TELA','E1',   0),
   -- ALTRES
-  ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  8),
-  ('HOTGLUE',     'Cola Calenta', 'SUNBBA','ALTRES',  null, -4),
+  ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  0),
+  ('HOTGLUE',     'Cola Calenta', 'SUNBBA','ALTRES',  null,  0),
   ('FARCIT_GR',   'Farcit Gran',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_CR_M', 'Farcit Mitjà',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_PT',   'Farcit Petit', 'SUNBBA','ALTRES',  'E3',  0),
   -- ESTRUCTURES
   -- MATALASSOS
-  ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 101),
-  ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1',   4),
+  ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 0),
+  ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1', 0),
   -- WIP
   ('POUF_ENF','Pouf Enfundat','SUNBBA','ALTRES','E1', 0),
   -- EMBALATGE
-  ('CAJA_S',  'Caixa Sunbba', 'SUNBBA','EMBALATGE','E1',  196),
-  ('CAJA_PUF','Caixa Pouf',   'SUNBBA','EMBALATGE','E1',    0),
-  ('MAN_S',   'Manual Sunbba','SUNBBA','EMBALATGE','E0',   -2),
-  ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',    0),
-  ('ETIQ',    'Etiqueta Sunbba','SUNBBA','EMBALATGE','E0', -4)
+  ('CAJA_S',  'Caixa Sunbba', 'SUNBBA','EMBALATGE','E1',  0),
+  ('CAJA_PUF','Caixa Pouf',   'SUNBBA','EMBALATGE','E1',  0),
+  ('MAN_S',   'Manual Sunbba','SUNBBA','EMBALATGE','E0',  0),
+  ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',  0),
+  ('ETIQ',    'Etiqueta Sunbba','SUNBBA','EMBALATGE','E0', 0)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
@@ -118,10 +119,10 @@ values ('SHARED', 'Compartit', null, true)
 on conflict (id) do nothing;
 
 insert into components (sku, name, tenant_id, category_code, station, stock_actual) values
-  ('POT',  'Potes',    'SHARED','PATES',      'E0', 688),
-  ('L_GR', 'L Gran',   'SHARED','ESTRUCTURES','E1', 286),
-  ('L_PT', 'L Petita', 'SHARED','ESTRUCTURES','E1', 315),
-  ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 428)
+  ('POT',  'Potes',    'SHARED','PATES',      'E0', 400),
+  ('L_GR', 'L Gran',   'SHARED','ESTRUCTURES','E1', 150),
+  ('L_PT', 'L Petita', 'SHARED','ESTRUCTURES','E1', 150),
+  ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 300)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
