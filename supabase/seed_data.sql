@@ -52,7 +52,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FARCIT_PT',   'Farcit Petit',            'BUMBBA','ALTRES',     'E3', 390),
   ('FARCIT_CR_M', 'Farcit Mitjà',             'BUMBBA','ALTRES',     'E3',  40),
   ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  18),
-  ('HOTGLUE',     'Cola Calenta',            'BUMBBA','ALTRES',      null, 250),
   ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  18),
   -- ESTRUCTURES
   ('BRAC',  'Braç',     'BUMBBA','ESTRUCTURES','E1',  28),
@@ -69,8 +68,7 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('MAN_ES',    'Manual Bumbba ES',  'BUMBBA','EMBALATGE','E0',    0),
   ('MAN_EN',    'Manual Bumbba EN',  'BUMBBA','EMBALATGE','E0',    0),
   ('MAN_BASE',  'Manual Bumbba Base','BUMBBA','EMBALATGE','E0',    0),
-  ('MAN_PUF',   'Manual Pouf/Braços','BUMBBA','EMBALATGE','E0',    0),
-  ('ETIQ',      'Etiqueta Bumbba',   'BUMBBA','EMBALATGE','E0',  700)
+  ('MAN_PUF',   'Manual Pouf/Braços','BUMBBA','EMBALATGE','E0',    0)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
@@ -90,7 +88,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FUN_PUF_INT', 'Funda Interior Pouf',   'SUNBBA','TELA','E1',   0),
   -- ALTRES
   ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  0),
-  ('HOTGLUE',     'Cola Calenta', 'SUNBBA','ALTRES',  null,  0),
   ('FARCIT_GR',   'Farcit Gran',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_CR_M', 'Farcit Mitjà',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_PT',   'Farcit Petit', 'SUNBBA','ALTRES',  'E3',  0),
@@ -104,8 +101,7 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('CAJA_S',  'Caixa Sunbba', 'SUNBBA','EMBALATGE','E1',  0),
   ('CAJA_PUF','Caixa Pouf',   'SUNBBA','EMBALATGE','E1',  0),
   ('MAN_S',   'Manual Sunbba','SUNBBA','EMBALATGE','E0',  0),
-  ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',  0),
-  ('ETIQ',    'Etiqueta Sunbba','SUNBBA','EMBALATGE','E0', 0)
+  ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',  0)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
@@ -122,6 +118,8 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('POT',  'Potes',    'SHARED','PATES',      'E0', 400),
   ('L_GR', 'L Gran',   'SHARED','ESTRUCTURES','E1', 150),
   ('L_PT', 'L Petita', 'SHARED','ESTRUCTURES','E1', 150),
+  ('HOTGLUE','Cola Calenta','SHARED','ALTRES',      null, 250),
+  ('ETIQ',   'Etiqueta',    'SHARED','EMBALATGE',   'E0', 700),
   ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 300)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
@@ -182,10 +180,10 @@ join lateral (values
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Manual Bumbba ES',  1, 'E0', false),
-  ('Etiqueta Bumbba',   1, 'E0', false),
+  ('Etiqueta',   1, 'E0', false),
   ('Cola Calenta',      1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='1P';
 
 -- ── BUMBBA 2P ──
@@ -205,7 +203,7 @@ join lateral (values
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 160',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='2P';
 
 -- ── BUMBBA 3P ──
@@ -221,11 +219,11 @@ join lateral (values
   ('Bossa Buit',         2, 'E2', false),
   ('Caixa Bumbba',       2, 'E1', false),
   ('Manual Bumbba ES',   1, 'E0', false),
-  ('Etiqueta Bumbba',    2, 'E0', false),
+  ('Etiqueta',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
   ('Funda Matalàs 190',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='3P';
 
 -- ── BUMBBA CHL ──
@@ -245,7 +243,7 @@ join lateral (values
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 190',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CHL';
 
 -- ── BUMBBA CRN ──
@@ -267,7 +265,7 @@ join lateral (values
   ('Manual Bumbba ES',       1, 'E0', false),
   ('Funda Matalàs 190',      4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CRN';
 
 -- ── BUMBBA PUF ──
@@ -281,7 +279,7 @@ join lateral (values
   ('Funda Pouf',         1, 'E1', true),
   ('Funda Interior Pouf',1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='PUF';
 
 -- ── BUMBBA BRAZO ──
@@ -294,7 +292,7 @@ join lateral (values
   ('Manual Pouf/Braços', 1, 'E0', false),
   ('Funda Braç',         2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='BRAZO';
 
 -- ── BUMBBA CR / CR_M / MC / RAC ──
@@ -307,7 +305,7 @@ join lateral (values
   ('Bossa Buit',     1, 'E2', false),
   ('Caixa Plain',    1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CR';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -319,7 +317,7 @@ join lateral (values
   ('Bossa Buit',         1, 'E2', false),
   ('Caixa Plain',        1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CR_M';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -330,7 +328,7 @@ join lateral (values
   ('Funda Coixí Petit',  1, 'E3', true),
   ('Caixa Plain',        1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='MC';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -342,7 +340,7 @@ join lateral (values
   ('Bossa Buit',             1, 'E2', false),
   ('Caixa Plain',            1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='RAC';
 
 -- ── BUMBBA CL190 / CL160 ──
@@ -353,7 +351,7 @@ join lateral (values
   ('Matalàs 190', 1, 'E1', true),
   ('Caixa Plain', 1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CL190';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -363,7 +361,7 @@ join lateral (values
   ('Matalàs 160', 1, 'E1', true),
   ('Caixa Plain', 1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='CL160';
 
 -- ── BUMBBA TB_IND / TB_IND_P ──
@@ -374,7 +372,7 @@ join lateral (values
   ('L Gran',        2, 'E1', true),
   ('Caixa Plain',   1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='TB_IND';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -384,7 +382,7 @@ join lateral (values
   ('L Petita',      2, 'E1', true),
   ('Caixa Plain',   1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('BUMBBA','SHARED')
 where p.tenant_id='BUMBBA' and p.code='TB_IND_P';
 
 -- ── SUNBBA 1P ──
@@ -399,10 +397,10 @@ join lateral (values
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
-  ('Etiqueta Sunbba',    1, 'E0', false),
+  ('Etiqueta',    1, 'E0', false),
   ('Cola Calenta',       1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='1P';
 
 -- ── SUNBBA 2P ──
@@ -417,11 +415,11 @@ join lateral (values
   ('Funda Coixí Mitjà',  2, 'E3', true),
   ('Bossa Buit',         2, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
-  ('Etiqueta Sunbba',    2, 'E0', false),
+  ('Etiqueta',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
   ('Funda Matalàs 160',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='2P';
 
 -- ── SUNBBA 3P ──
@@ -437,11 +435,11 @@ join lateral (values
   ('Funda Coixí Gran',   2, 'E3', true),
   ('Bossa Buit',         2, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
-  ('Etiqueta Sunbba',    2, 'E0', false),
+  ('Etiqueta',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
   ('Funda Matalàs 190',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='3P';
 
 -- ── SUNBBA CHL_190_160 ──
@@ -457,12 +455,12 @@ join lateral (values
   ('Funda Coixí Gran',  3, 'E3', true),
   ('Bossa Buit',        3, 'E2', false),
   ('Manual Sunbba',     1, 'E0', false),
-  ('Etiqueta Sunbba',   4, 'E0', false),
+  ('Etiqueta',   4, 'E0', false),
   ('Cola Calenta',      4, 'E1', false),
   ('Funda Matalàs 190', 2, 'E1', true),
   ('Funda Matalàs 160', 2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='CHL_190_160';
 
 -- ── SUNBBA CHLB ──
@@ -478,7 +476,7 @@ join lateral (values
   ('Bossa Buit',        3, 'E2', false),
   ('Funda Matalàs 190', 4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='CHLB';
 
 -- ── SUNBBA CHLS ──
@@ -494,7 +492,7 @@ join lateral (values
   ('Bossa Buit',         3, 'E2', false),
   ('Funda Matalàs 160',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='CHLS';
 
 -- ── SUNBBA CR / CR_M / MC ──
@@ -507,7 +505,7 @@ join lateral (values
   ('Bossa Buit',        1, 'E2', false),
   ('Caixa Sunbba',      1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='CR';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -519,7 +517,7 @@ join lateral (values
   ('Bossa Buit',         1, 'E2', false),
   ('Caixa Sunbba',       1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='CR_M';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -530,7 +528,7 @@ join lateral (values
   ('Funda Coixí Petit', 1, 'E3', true),
   ('Caixa Sunbba',      1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='MC';
 
 -- ── SUNBBA PUF ──
@@ -541,12 +539,12 @@ join lateral (values
   ('Caixa Pouf',         1, 'E1', false),
   ('Pouf Enfundat',      2, 'E1', true),
   ('Manual Pouf',        1, 'E0', false),
-  ('Etiqueta Sunbba',    1, 'E0', false),
+  ('Etiqueta',    1, 'E0', false),
   ('Funda Pouf',         1, 'E1', true),
   ('Funda Interior Pouf',1, 'E1', false),
   ('Cola Calenta',       1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname
+join components c on c.name=v.cname and c.tenant_id IN ('SUNBBA','SHARED')
 where p.tenant_id='SUNBBA' and p.code='PUF';
 
 
