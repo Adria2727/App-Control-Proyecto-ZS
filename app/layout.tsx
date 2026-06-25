@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import AssistantChat from "@/components/AssistantChat";
 import LogoutButton from "@/components/LogoutButton";
+import AlertNavDot from "@/components/AlertNavDot";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   className="px-3 py-1.5 rounded-md hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
                 >
                   {n.label}
+                  {n.href === "/alertes" && <AlertNavDot />}
                 </Link>
               ))}
             </nav>
