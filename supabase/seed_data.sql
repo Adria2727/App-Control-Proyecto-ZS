@@ -272,7 +272,7 @@ join lateral (values
   ('Pouf Enfundat','PGC', 1, 'E1', true),
   ('L Gran','PGC', 1, 'E1', true),
   ('Coixí Mitjà Muntat','PGC', 1, 'KANBAN', true),
-  ('Potes Blanques', null, 4, 'E0', false),
+  ('Potes Blanques', null, 4, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Etiqueta Bumbba', null, 1, 'E0', false),
   ('Cola Calenta', null, 1, 'E1', false)
@@ -291,7 +291,7 @@ join lateral (values
   ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Mitjà Muntat','PGC', 2, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 160','PGC', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
@@ -304,9 +304,11 @@ select p.id, c.id, v.qty, v.station, v.cv
 from products p
 join lateral (values
   ('Matalàs 190','PGC', 2, 'E1', true),
+  ('L Gran','PGC', 2, 'E1', true),
+  ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Gran Muntat','PGC', 2, 'KANBAN', true),
   ('Caixa Bumbba', null::text, 2, 'E1', false),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Etiqueta Bumbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
@@ -326,7 +328,7 @@ join lateral (values
   ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Gran Muntat','PGC', 3, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 190','PGC', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
@@ -345,7 +347,7 @@ join lateral (values
   ('Coixí Gran Muntat','PGC', 3, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
   ('Coixí Rinconera Muntat','PGC', 1, 'KANBAN', true),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 190','PGC', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
@@ -454,7 +456,7 @@ select p.id, c.id, v.qty, v.station, v.cv
 from products p
 join lateral (values
   ('L Gran','PGC', 2, 'E1', true),
-  ('Potes Blanques', null, 4, 'E0', false),
+  ('Potes Blanques', null, 4, 'E0', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
 join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
@@ -465,7 +467,7 @@ select p.id, c.id, v.qty, v.station, v.cv
 from products p
 join lateral (values
   ('L Petita','PGC', 2, 'E1', true),
-  ('Potes Blanques', null, 4, 'E0', false),
+  ('Potes Blanques', null, 4, 'E0', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
 join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
@@ -480,7 +482,7 @@ join lateral (values
   ('Pouf Enfundat','PC04', 1, 'E1', true),
   ('L Gran','PC04', 1, 'E1', true),
   ('Coixí Mitjà Muntat','PC04', 1, 'KANBAN', true),
-  ('Potes Blanques', null, 4, 'E0', false),
+  ('Potes Blanques', null, 4, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 1, 'E0', false),
   ('Cola Calenta', null, 1, 'E1', false)
@@ -497,7 +499,7 @@ join lateral (values
   ('Matalàs 160','PC04', 2, 'E1', true),
   ('L Gran','PC04', 2, 'E1', true),
   ('Coixí Mitjà Muntat','PC04', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
@@ -514,8 +516,9 @@ join lateral (values
   ('Caixa Sunbba', null::text, 2, 'E1', false),
   ('Matalàs 190','PC04', 2, 'E1', true),
   ('L Gran','PC04', 2, 'E1', true),
+  ('L Petita','PC04', 2, 'E1', true),
   ('Coixí Gran Muntat','PC04', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 12, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
@@ -534,7 +537,7 @@ join lateral (values
   ('Matalàs 160','PC04', 2, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Gran Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 24, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 4, 'E0', false),
   ('Cola Calenta', null, 4, 'E1', false),
@@ -553,7 +556,7 @@ join lateral (values
   ('Matalàs 190','PC04', 4, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Gran Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 24, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Funda Matalàs 190','PC04', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
@@ -568,7 +571,7 @@ join lateral (values
   ('Matalàs 160','PC04', 4, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Mitjà Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 24, 'E0', false),
+  ('Potes Blanques', null, 6, 'E0', true),
   ('Funda Matalàs 160','PC04', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
