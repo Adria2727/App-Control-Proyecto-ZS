@@ -11,19 +11,12 @@ interface ComponentOption {
   id: number;
   sku: string;
   name: string;
-  color_code: string | null;
   tenant_id: string;
   stock_actual: number;
 }
 
 interface ProductOption {
   id: number;
-  code: string;
-  name: string;
-  tenant_id: string;
-}
-
-interface ColorOption {
   code: string;
   name: string;
   tenant_id: string;
@@ -36,15 +29,8 @@ interface InLine {
 
 interface OutLine {
   product: ProductOption;
-  color_code: string;
   quantity: number;
 }
-
-const COLOR_NAMES: Record<string, string> = {
-  PVC: "Light Green", PGC: "Arctic Sand", PGO: "Shadow Grey",
-  GR: "Dark Grey", BG: "Beige",
-  PC04: "Light Ivory", PC37: "Green Olive", PC82: "Grey Stone", PC99: "Graphite Grey",
-};
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -80,20 +66,18 @@ export default function InvoiceUploadModal() {
   // Dades per al selector de línies
   const [allComponents, setAllComponents] = useState<ComponentOption[]>([]);
   const [allProducts, setAllProducts]     = useState<ProductOption[]>([]);
-  const [allColors, setAllColors]         = useState<ColorOption[]>([]);
 
   // Inputs del formulari de línies
   const [lineCompSearch, setLineCompSearch] = useState("");
   const [lineComp, setLineComp]   = useState<ComponentOption | null>(null);
   const [lineQty, setLineQty]     = useState(1);
   const [lineProd, setLineProd]   = useState<ProductOption | null>(null);
-  const [lineColor, setLineColor] = useState("");
 
   function reset() {
     setStep("idle"); setParsed(null); setError(null); setFileName("");
     setInLines([]); setOutLines([]);
     setLineCompSearch(""); setLineComp(null); setLineQty(1);
-    setLineProd(null); setLineColor("");
+    setLineProd(null);
     if (fileRef.current) fileRef.current.value = "";
   }
   function close() { setOpen(false); reset(); }
@@ -103,7 +87,7 @@ export default function InvoiceUploadModal() {
     if (step !== "lines") return;
     if (type === "in" && allComponents.length === 0) {
       supabase.from("components")
-        .select("id, sku, name, color_code, tenant_id, stock_actual")
+        .select("id, sku, name, tenant_id, stock_actual")
         .order("tenant_id").order("name")
         .then(({ data }) => setAllComponents((data ?? []) as ComponentOption[]));
     }
@@ -113,20 +97,8 @@ export default function InvoiceUploadModal() {
         .eq("bom_active", true)
         .order("tenant_id").order("code")
         .then(({ data }) => setAllProducts((data ?? []) as ProductOption[]));
-      supabase.from("colors")
-        .select("code, name, tenant_id")
-        .eq("is_active", true)
-        .order("tenant_id").order("code")
-        .then(({ data }) => setAllColors((data ?? []) as ColorOption[]));
     }
   }, [step, type]);
-
-  // Quan es canvia el producte OUT, establir color per defecte
-  useEffect(() => {
-    if (!lineProd) return;
-    const colors = allColors.filter(c => c.tenant_id === lineProd.tenant_id);
-    if (colors.length > 0 && !lineColor) setLineColor(colors[0].code);
-  }, [lineProd, allColors]);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -159,9 +131,9 @@ export default function InvoiceUploadModal() {
   }
 
   function addOutLine() {
-    if (!lineProd || !lineColor || lineQty <= 0) return;
-    setOutLines(prev => [...prev, { product: lineProd!, color_code: lineColor, quantity: lineQty }]);
-    setLineProd(null); setLineColor(""); setLineQty(1);
+    if (!lineProd || lineQty <= 0) return;
+    setOutLines(prev => [...prev, { product: lineProd!, quantity: lineQty }]);
+    setLineProd(null); setLineQty(1);
   }
 
   async function handleSave(withInventory: boolean) {
@@ -219,38 +191,24 @@ export default function InvoiceUploadModal() {
         if (withInventory && outLines.length > 0) {
           for (const line of outLines) {
             await supabase.from("invoice_out_lines").insert({
-              invoice_id: inv!.id, product_id: line.product.id,
-              color_code: line.color_code, quantity: line.quantity,
+              invoice_id: inv!.id, product_id: line.product.id, quantity: line.quantity,
             });
 
             // Expandim el BOM i restem cada component
             const { data: bomLines } = await supabase
               .from("bom")
-              .select("quantity, color_varies, component:components(id, sku, tenant_id)")
+              .select("quantity, component:components(id)")
               .eq("product_id", line.product.id);
 
             for (const bom of bomLines ?? []) {
-              const comp = bom.component as { id: number; sku: string; tenant_id: string };
-              let compId = comp.id;
-
-              if (bom.color_varies && line.color_code) {
-                const { data: colorComp } = await supabase
-                  .from("components")
-                  .select("id")
-                  .eq("tenant_id", comp.tenant_id)
-                  .eq("sku", comp.sku)
-                  .eq("color_code", line.color_code)
-                  .single();
-                if (colorComp) compId = colorComp.id;
-              }
-
+              const comp = bom.component as { id: number };
               const delta = Math.round(Number(bom.quantity) * line.quantity);
-              await supabase.rpc("adjust_stock", { comp_id: compId, delta: -delta });
+              await supabase.rpc("adjust_stock", { comp_id: comp.id, delta: -delta });
               await supabase.from("stock_movements").insert({
-                component_id: compId,
+                component_id: comp.id,
                 movement_type: "OUT",
                 quantity: delta,
-                reason: `Factura venda ${parsed.invoice_number} — ${line.product.code} ×${line.quantity} ${line.color_code}`,
+                reason: `Factura venda ${parsed.invoice_number} — ${line.product.code} ×${line.quantity}`,
               });
             }
           }
@@ -267,12 +225,8 @@ export default function InvoiceUploadModal() {
   // ── Filtres del selector de components ──────────────────────────────────
   const filteredComponents = lineCompSearch.trim().length >= 2
     ? allComponents.filter(c =>
-        `${c.name} ${c.sku} ${c.color_code ?? ""}`.toLowerCase().includes(lineCompSearch.toLowerCase())
+        `${c.name} ${c.sku}`.toLowerCase().includes(lineCompSearch.toLowerCase())
       ).slice(0, 20)
-    : [];
-
-  const colorsForProduct = lineProd
-    ? allColors.filter(c => c.tenant_id === lineProd.tenant_id)
     : [];
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -417,9 +371,9 @@ export default function InvoiceUploadModal() {
                         {filteredComponents.length > 0 && !lineComp && (
                           <div className="absolute top-full left-0 right-0 z-10 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
                             {filteredComponents.map(c => (
-                              <button key={c.id} onClick={() => { setLineComp(c); setLineCompSearch(`${c.name}${c.color_code ? ` ${COLOR_NAMES[c.color_code] ?? c.color_code}` : ""} (${c.sku})`); }}
+                              <button key={c.id} onClick={() => { setLineComp(c); setLineCompSearch(`${c.name} (${c.sku})`); }}
                                 className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background)] flex justify-between">
-                                <span>{c.name}{c.color_code ? ` — ${COLOR_NAMES[c.color_code] ?? c.color_code}` : ""}</span>
+                                <span>{c.name}</span>
                                 <span className="text-xs text-[var(--muted)]">stock: {c.stock_actual}</span>
                               </button>
                             ))}
@@ -443,7 +397,7 @@ export default function InvoiceUploadModal() {
                     <div className="space-y-2">
                       <select value={lineProd?.id ?? ""} onChange={e => {
                           const p = allProducts.find(x => x.id === Number(e.target.value)) ?? null;
-                          setLineProd(p); setLineColor("");
+                          setLineProd(p);
                         }}
                         className="select w-full text-sm">
                         <option value="">— Selecciona producte —</option>
@@ -456,19 +410,12 @@ export default function InvoiceUploadModal() {
                         ))}
                       </select>
                       <div className="flex gap-2">
-                        <select value={lineColor} onChange={e => setLineColor(e.target.value)}
-                          className="select flex-1 text-sm" disabled={!lineProd}>
-                          <option value="">— Color —</option>
-                          {colorsForProduct.map(c => (
-                            <option key={c.code} value={c.code}>{c.code} · {c.name}</option>
-                          ))}
-                        </select>
                         <input type="number" min={1} value={lineQty} onChange={e => setLineQty(Number(e.target.value))}
-                          className="select w-20 text-sm" placeholder="Qty" />
-                        <button onClick={addOutLine} disabled={!lineProd || !lineColor || lineQty <= 0}
-                          className="px-3 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
+                          className="select w-24 text-sm" placeholder="Qty" />
+                        <button onClick={addOutLine} disabled={!lineProd || lineQty <= 0}
+                          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
                           style={{ background: "var(--bumbba)" }}>
-                          +
+                          + Afegir
                         </button>
                       </div>
                     </div>
@@ -482,7 +429,7 @@ export default function InvoiceUploadModal() {
                       </div>
                       {type === "in" && inLines.map((l, i) => (
                         <div key={i} className="flex items-center justify-between px-3 py-2 text-sm border-b border-[var(--border)] last:border-0">
-                          <span>{l.component.name}{l.component.color_code ? ` ${COLOR_NAMES[l.component.color_code] ?? l.component.color_code}` : ""}</span>
+                          <span>{l.component.name}</span>
                           <div className="flex items-center gap-3">
                             <span className="font-semibold text-green-600">+{l.quantity}</span>
                             <button onClick={() => setInLines(prev => prev.filter((_, j) => j !== i))}
@@ -492,7 +439,7 @@ export default function InvoiceUploadModal() {
                       ))}
                       {type === "out" && outLines.map((l, i) => (
                         <div key={i} className="flex items-center justify-between px-3 py-2 text-sm border-b border-[var(--border)] last:border-0">
-                          <span>{l.product.code} — {l.product.name} <span className="text-[var(--muted)]">({COLOR_NAMES[l.color_code] ?? l.color_code})</span></span>
+                          <span>{l.product.code} — {l.product.name}</span>
                           <div className="flex items-center gap-3">
                             <span className="font-semibold text-red-500">−{l.quantity} u.</span>
                             <button onClick={() => setOutLines(prev => prev.filter((_, j) => j !== i))}

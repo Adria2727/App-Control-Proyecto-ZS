@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS invoice_out_lines (
   id           SERIAL PRIMARY KEY,
   invoice_id   INTEGER NOT NULL REFERENCES invoices_out(id) ON DELETE CASCADE,
   product_id   BIGINT  NOT NULL REFERENCES products(id),
-  color_code   TEXT,
   quantity     INTEGER NOT NULL CHECK (quantity > 0)
 );
 

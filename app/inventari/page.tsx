@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function InventariPage() {
   const { data } = await supabase
     .from("components")
-    .select("id,sku,name,tenant_id,category_code,color_code,station,stock_actual")
+    .select("id,sku,name,tenant_id,category_code,station,stock_actual,cost_unitari")
     .order("name");
 
   return (

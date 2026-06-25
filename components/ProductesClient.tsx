@@ -9,7 +9,6 @@ interface ComponentRow {
   sku: string;
   name: string;
   category_code: string;
-  color_code: string | null;
   station: string | null;
 }
 
@@ -62,43 +61,7 @@ const FAMILY_LABEL: Record<string, string> = {
   COMPONENT: "Components",
 };
 
-const COLOR_NAMES: Record<string, string> = {
-  PVC: "Light Green",
-  PGC: "Arctic Sand",
-  PGO: "Shadow Grey",
-  GR: "Dark Grey",
-  BG: "Beige",
-  PC04: "Light Ivory",
-  PC37: "Green Olive",
-  PC82: "Grey Stone",
-  PC99: "Graphite Grey",
-};
-
-const COLOR_HEX: Record<string, string> = {
-  PVC: "#86efac",
-  PGC: "#d2b48c",
-  PGO: "#9ca3af",
-  GR: "#6b7280",
-  BG: "#e8d5b7",
-  PC04: "#f5f0e8",
-  PC37: "#6b7c5a",
-  PC82: "#9e9e9e",
-  PC99: "#4a4a4a",
-};
-
 // ── Subcomponents ──────────────────────────────────────────────────────────
-
-function ColorChip({ code }: { code: string }) {
-  return (
-    <span
-      className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border border-black/10"
-      style={{ background: COLOR_HEX[code] ?? "#e5e7eb", color: ["GR", "PC37", "PC82", "PC99"].includes(code) ? "#fff" : "#111" }}
-      title={COLOR_NAMES[code]}
-    >
-      {code}
-    </span>
-  );
-}
 
 function BomTable({ lines }: { lines: BomLine[] }) {
   if (lines.length === 0) return <p className="text-xs text-[var(--muted)] italic">Sense línies BOM registrades.</p>;
@@ -120,8 +83,7 @@ function BomTable({ lines }: { lines: BomLine[] }) {
           <th className="py-1 pr-3 font-medium">Estació</th>
           <th className="py-1 pr-3 font-medium">Component</th>
           <th className="py-1 pr-3 font-medium">Categoria</th>
-          <th className="py-1 pr-3 text-right font-medium">Qty</th>
-          <th className="py-1 font-medium">Color</th>
+          <th className="py-1 text-right font-medium">Qty</th>
         </tr>
       </thead>
       <tbody>
@@ -133,18 +95,7 @@ function BomTable({ lines }: { lines: BomLine[] }) {
               </td>
               <td className="py-1 pr-3 font-medium">{l.component.name}</td>
               <td className="py-1 pr-3 capitalize text-[var(--muted)]">{l.component.category_code.toLowerCase()}</td>
-              <td className="py-1 pr-3 text-right tabular-nums">{l.quantity}</td>
-              <td className="py-1">
-                {l.component.category_code === "PATES" ? (
-                  <span className="text-xs px-2 py-0.5 rounded-full border border-black/10 bg-gray-100 text-gray-600">blanc / negre</span>
-                ) : l.color_varies ? (
-                  <span className="text-[var(--muted)] italic">segons color</span>
-                ) : l.component.color_code ? (
-                  <ColorChip code={l.component.color_code} />
-                ) : (
-                  <span className="text-[var(--muted)]">—</span>
-                )}
-              </td>
+              <td className="py-1 text-right tabular-nums">{l.quantity}</td>
             </tr>
           ))
         )}
@@ -194,10 +145,6 @@ function PricesSection({ prices, tenant }: { prices: Price[]; tenant: string }) 
 function ProductCard({ product }: { product: ProductFull }) {
   const [open, setOpen] = useState(false);
 
-  const colorVariantCodes = Array.from(
-    new Set(product.bom.filter((l) => l.color_varies && l.component.color_code).map((l) => l.component.color_code!))
-  );
-
   const tenantColor = product.tenant_id === "BUMBBA" ? "var(--bumbba)" : "var(--sunbba)";
 
   return (
@@ -213,12 +160,6 @@ function ProductCard({ product }: { product: ProductFull }) {
         <span className="font-semibold flex-1">{product.name}</span>
 
         <div className="flex items-center gap-2 shrink-0">
-          {colorVariantCodes.length > 0 && (
-            <div className="flex gap-1">
-              {colorVariantCodes.map((c) => <ColorChip key={c} code={c} />)}
-            </div>
-          )}
-
           {!product.bom_active && (
             <span className="text-xs px-2 py-0.5 rounded-md font-medium" style={{ color: "#b45309", background: "#fef3c7" }}>
               BOM inactiu

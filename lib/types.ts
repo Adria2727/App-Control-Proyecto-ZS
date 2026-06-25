@@ -8,9 +8,9 @@ export interface Component {
   name: string;
   tenant_id: Tenant;
   category_code: string;
-  color_code: string | null;
   station: string | null;
   stock_actual: number;
+  cost_unitari: number | null;
 }
 
 export interface Product {
