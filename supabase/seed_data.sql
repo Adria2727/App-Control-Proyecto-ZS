@@ -61,9 +61,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- MATALASSOS
   ('MAT_190','Matalàs 190','BUMBBA','MATALASSOS','E1', 131),
   ('MAT_160','Matalàs 160','BUMBBA','MATALASSOS','E1',  55),
-  -- PATES
-  ('POT_BL','Potes Blanques','BUMBBA','PATES','E0', 304),
-  ('POT_NG','Potes Negres',  'BUMBBA','PATES','E0', 408),
   -- COIXINS MUNTATS (buffer KANBAN)
   ('CX_GR', 'Coixí Gran Muntat',      'BUMBBA','COIXINS','KANBAN', 0),
   ('CX_M',  'Coixí Mitjà Muntat',     'BUMBBA','COIXINS','KANBAN', 0),
@@ -110,9 +107,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- MATALASSOS
   ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 101),
   ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1',   4),
-  -- PATES
-  ('POT_BL','Potes Blanques','SUNBBA','PATES','E0', -24),
-  ('POT_NG','Potes Negres',  'SUNBBA','PATES','E0',   0),
   -- COIXINS MUNTATS
   ('CX_GR','Coixí Gran Muntat', 'SUNBBA','COIXINS','KANBAN', 0),
   ('CX_M', 'Coixí Mitjà Muntat','SUNBBA','COIXINS','KANBAN', 0),
@@ -126,6 +120,20 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('MAN_S',   'Manual Sunbba','SUNBBA','EMBALATGE','E0',   -2),
   ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',    0),
   ('ETIQ',    'Etiqueta Sunbba','SUNBBA','EMBALATGE','E0', -4)
+on conflict (tenant_id, sku) do update
+  set stock_actual=excluded.stock_actual, name=excluded.name,
+      category_code=excluded.category_code, station=excluded.station;
+
+
+-- ============================================================================
+-- COMPONENTS — SHARED (compartits entre marques)
+-- ============================================================================
+insert into tenants (id, name, website, active)
+values ('SHARED', 'Compartit', null, true)
+on conflict (id) do nothing;
+
+insert into components (sku, name, tenant_id, category_code, station, stock_actual) values
+  ('POT','Potes','SHARED','PATES','E0', 688)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
@@ -182,7 +190,6 @@ join lateral (values
   ('Pouf Enfundat',     1, 'E1', true),
   ('L Gran',            1, 'E1', true),
   ('Coixí Mitjà Muntat',1, 'KANBAN', true),
-  ('Potes Blanques',    4, 'E0', true),
   ('Manual Bumbba ES',  1, 'E0', false),
   ('Etiqueta Bumbba',   1, 'E0', false),
   ('Cola Calenta',      1, 'E1', false)
@@ -201,7 +208,6 @@ join lateral (values
   ('L Petita',           2, 'E1', true),
   ('Coixí Mitjà Muntat', 2, 'KANBAN', true),
   ('Coixí Petit Muntat', 2, 'KANBAN', true),
-  ('Potes Blanques',    12, 'E0', true),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 160',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -218,7 +224,6 @@ join lateral (values
   ('L Petita',           2, 'E1', true),
   ('Coixí Gran Muntat',  2, 'KANBAN', true),
   ('Caixa Bumbba',       2, 'E1', false),
-  ('Potes Blanques',    12, 'E0', true),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Etiqueta Bumbba',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
@@ -238,7 +243,6 @@ join lateral (values
   ('L Petita',           2, 'E1', true),
   ('Coixí Gran Muntat',  3, 'KANBAN', true),
   ('Coixí Petit Muntat', 2, 'KANBAN', true),
-  ('Potes Blanques',    12, 'E0', true),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 190',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -257,7 +261,6 @@ join lateral (values
   ('Coixí Gran Muntat',      3, 'KANBAN', true),
   ('Coixí Petit Muntat',     2, 'KANBAN', true),
   ('Coixí Rinconera Muntat', 1, 'KANBAN', true),
-  ('Potes Blanques',        12, 'E0', true),
   ('Manual Bumbba ES',       1, 'E0', false),
   ('Funda Matalàs 190',      4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -366,7 +369,6 @@ select p.id, c.id, v.qty, v.st, v.cv
 from products p
 join lateral (values
   ('L Gran',        2, 'E1', true),
-  ('Potes Blanques',4, 'E0', true),
   ('Caixa Plain',   1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='BUMBBA' and c.name=v.cname
@@ -377,7 +379,6 @@ select p.id, c.id, v.qty, v.st, v.cv
 from products p
 join lateral (values
   ('L Petita',      2, 'E1', true),
-  ('Potes Blanques',4, 'E0', true),
   ('Caixa Plain',   1, 'E1', false)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='BUMBBA' and c.name=v.cname
@@ -392,7 +393,6 @@ join lateral (values
   ('Pouf Enfundat',      1, 'E1', true),
   ('L Gran',             1, 'E1', true),
   ('Coixí Mitjà Muntat', 1, 'KANBAN', true),
-  ('Potes Blanques',     4, 'E0', true),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    1, 'E0', false),
   ('Cola Calenta',       1, 'E1', false)
@@ -409,7 +409,6 @@ join lateral (values
   ('Matalàs 160',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
   ('Coixí Mitjà Muntat', 2, 'KANBAN', true),
-  ('Potes Blanques',    12, 'E0', true),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
@@ -428,7 +427,6 @@ join lateral (values
   ('L Gran',             2, 'E1', true),
   ('L Petita',           2, 'E1', true),
   ('Coixí Gran Muntat',  2, 'KANBAN', true),
-  ('Potes Blanques',    12, 'E0', true),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
@@ -447,7 +445,6 @@ join lateral (values
   ('Matalàs 160',       2, 'E1', true),
   ('L Gran',            3, 'E1', true),
   ('Coixí Gran Muntat', 3, 'KANBAN', true),
-  ('Potes Blanques',   24, 'E0', true),
   ('Manual Sunbba',     1, 'E0', false),
   ('Etiqueta Sunbba',   4, 'E0', false),
   ('Cola Calenta',      4, 'E1', false),
@@ -466,7 +463,6 @@ join lateral (values
   ('Matalàs 190',       4, 'E1', true),
   ('L Gran',            3, 'E1', true),
   ('Coixí Gran Muntat', 3, 'KANBAN', true),
-  ('Potes Blanques',   24, 'E0', true),
   ('Funda Matalàs 190', 4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname
@@ -481,7 +477,6 @@ join lateral (values
   ('Matalàs 160',        4, 'E1', true),
   ('L Gran',             3, 'E1', true),
   ('Coixí Mitjà Muntat', 3, 'KANBAN', true),
-  ('Potes Blanques',    24, 'E0', true),
   ('Funda Matalàs 160',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname
@@ -538,6 +533,28 @@ join lateral (values
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname
 where p.tenant_id='SUNBBA' and p.code='PUF';
+
+
+-- ── POTES (component SHARED, inserció per separat) ──
+insert into bom (product_id, component_id, quantity, station, color_varies)
+select p.id, pot.id, v.qty, 'E0', false
+from (values
+  ('BUMBBA','1P',  4),
+  ('BUMBBA','2P', 12),
+  ('BUMBBA','3P', 12),
+  ('BUMBBA','CHL',12),
+  ('BUMBBA','CRN',12),
+  ('BUMBBA','TB_IND',  4),
+  ('BUMBBA','TB_IND_P',4),
+  ('SUNBBA','1P',  4),
+  ('SUNBBA','2P', 12),
+  ('SUNBBA','3P', 12),
+  ('SUNBBA','CHL_190_160',24),
+  ('SUNBBA','CHLB',       24),
+  ('SUNBBA','CHLS',       24)
+) as v(brand, code, qty)
+join products p on p.tenant_id=v.brand and p.code=v.code
+cross join (select id from components where tenant_id='SHARED' and sku='POT') pot;
 
 -- ============================================================================
 -- PREUS

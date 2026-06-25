@@ -1,6 +1,6 @@
 // Tipus de dades de ZeroStock (reflecteixen les taules de Supabase)
 
-export type Tenant = "BUMBBA" | "SUNBBA";
+export type Tenant = "BUMBBA" | "SUNBBA" | "SHARED";
 
 export interface Component {
   id: number;

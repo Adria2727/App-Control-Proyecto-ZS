@@ -56,6 +56,7 @@ export default function InventoryTable({ components }: { components: Component[]
           <option value="ALL">Totes les marques</option>
           <option value="BUMBBA">Bumbba</option>
           <option value="SUNBBA">Sunbba</option>
+          <option value="SHARED">Compartit</option>
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className="select">
           <option value="ALL">Totes les categories</option>
@@ -95,8 +96,8 @@ export default function InventoryTable({ components }: { components: Component[]
               return (
                 <tr key={c.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--background)]">
                   <td className="px-3 py-2">
-                    <span style={{ color: c.tenant_id === "BUMBBA" ? "var(--bumbba)" : "var(--sunbba)" }}>
-                      {c.tenant_id === "BUMBBA" ? "Bumbba" : "Sunbba"}
+                    <span style={{ color: c.tenant_id === "BUMBBA" ? "var(--bumbba)" : c.tenant_id === "SUNBBA" ? "var(--sunbba)" : "var(--muted)" }}>
+                      {c.tenant_id === "BUMBBA" ? "Bumbba" : c.tenant_id === "SUNBBA" ? "Sunbba" : "Compartit"}
                     </span>
                   </td>
                   <td className="px-3 py-2 font-medium">{c.name}</td>
