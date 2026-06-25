@@ -77,6 +77,8 @@ export default function InvoiceUploadModal() {
   const [parsedLines, setParsedLines]       = useState<ParsedLineItem[]>([]);
   const [lineChecked, setLineChecked]       = useState<boolean[]>([]);
   const [lineMappedSku, setLineMappedSku]   = useState<string[]>([]);
+  const [lineMappedSku2, setLineMappedSku2] = useState<string[]>([]);
+  const [lineHasSecond, setLineHasSecond]   = useState<boolean[]>([]);
 
   // Dades per al selector de línies
   const [allComponents, setAllComponents] = useState<ComponentOption[]>([]);
@@ -89,6 +91,7 @@ export default function InvoiceUploadModal() {
   function reset() {
     setStep("idle"); setParsed(null); setError(null); setFileName("");
     setOutLines([]); setParsedLines([]); setLineChecked([]); setLineMappedSku([]);
+    setLineMappedSku2([]); setLineHasSecond([]);
     setLineQty(1); setLineProd(null);
     if (fileRef.current) fileRef.current.value = "";
   }
@@ -104,6 +107,8 @@ export default function InvoiceUploadModal() {
         setParsedLines(lines);
         setLineChecked(lines.map((l: ParsedLineItem) => l.to_inventory));
         setLineMappedSku(lines.map((l: ParsedLineItem) => l.suggested_sku ?? ""));
+        setLineMappedSku2(lines.map(() => ""));
+        setLineHasSecond(lines.map(() => false));
       }
       if (allComponents.length === 0) {
         supabase.from("components")
@@ -174,13 +179,13 @@ export default function InvoiceUploadModal() {
         if (dbErr) throw new Error(dbErr.message);
 
         if (withInventory) {
-          // Agrupar línies marcades per SKU → sumar quantitats
+          // Agrupar línies marcades per SKU → sumar quantitats (suporta 2 SKUs per línia)
           const grouped: Record<string, number> = {};
           parsedLines.forEach((l, i) => {
-            const sku = lineMappedSku[i];
-            if (lineChecked[i] && sku) {
-              grouped[sku] = (grouped[sku] ?? 0) + Math.round(l.quantity);
-            }
+            if (!lineChecked[i]) return;
+            const qty = Math.round(l.quantity);
+            if (lineMappedSku[i])  grouped[lineMappedSku[i]]  = (grouped[lineMappedSku[i]]  ?? 0) + qty;
+            if (lineMappedSku2[i]) grouped[lineMappedSku2[i]] = (grouped[lineMappedSku2[i]] ?? 0) + qty;
           });
 
           for (const [sku, qty] of Object.entries(grouped)) {
@@ -394,21 +399,58 @@ export default function InvoiceUploadModal() {
                                 </span>
                               </div>
                               {lineChecked[i] && (
-                                <div className="mt-1.5">
-                                  <select
-                                    value={lineMappedSku[i]}
-                                    onChange={e => setLineMappedSku(prev => prev.map((v, j) => j === i ? e.target.value : v))}
-                                    className="w-full text-xs rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1"
-                                  >
-                                    <option value="">— Selecciona component —</option>
-                                    {["BUMBBA","SUNBBA"].map(t => (
-                                      <optgroup key={t} label={t}>
-                                        {allComponents.filter(c => c.tenant_id === t).map(c => (
-                                          <option key={c.id} value={c.sku}>{c.sku} — {c.name}</option>
+                                <div className="mt-1.5 space-y-1">
+                                  {/* SKU 1 */}
+                                  <div className="flex gap-1">
+                                    <select
+                                      value={lineMappedSku[i]}
+                                      onChange={e => setLineMappedSku(prev => prev.map((v, j) => j === i ? e.target.value : v))}
+                                      className="flex-1 text-xs rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1"
+                                    >
+                                      <option value="">— Component 1 —</option>
+                                      {["BUMBBA","SUNBBA"].map(t => (
+                                        <optgroup key={t} label={t}>
+                                          {allComponents.filter(c => c.tenant_id === t).map(c => (
+                                            <option key={c.id} value={c.sku}>{c.sku} — {c.name}</option>
+                                          ))}
+                                        </optgroup>
+                                      ))}
+                                    </select>
+                                    {!lineHasSecond[i] && (
+                                      <button
+                                        title="Afegir segon component (ex: matalàs + funda junts)"
+                                        onClick={() => setLineHasSecond(prev => prev.map((v, j) => j === i ? true : v))}
+                                        className="shrink-0 w-6 h-6 flex items-center justify-center rounded border border-[var(--border)] text-[var(--muted)] hover:border-[var(--bumbba)] hover:text-[var(--bumbba)] text-xs"
+                                      >+</button>
+                                    )}
+                                  </div>
+                                  {/* SKU 2 (opcional) */}
+                                  {lineHasSecond[i] && (
+                                    <div className="flex gap-1">
+                                      <select
+                                        value={lineMappedSku2[i]}
+                                        onChange={e => setLineMappedSku2(prev => prev.map((v, j) => j === i ? e.target.value : v))}
+                                        className="flex-1 text-xs rounded-md border border-[var(--bumbba)]/50 bg-[var(--bumbba)]/5 px-2 py-1"
+                                      >
+                                        <option value="">— Component 2 —</option>
+                                        {["BUMBBA","SUNBBA"].map(t => (
+                                          <optgroup key={t} label={t}>
+                                            {allComponents.filter(c => c.tenant_id === t).map(c => (
+                                              <option key={c.id} value={c.sku}>{c.sku} — {c.name}</option>
+                                            ))}
+                                          </optgroup>
                                         ))}
-                                      </optgroup>
-                                    ))}
-                                  </select>
+                                      </select>
+                                      <button
+                                        title="Eliminar segon component"
+                                        onClick={() => {
+                                          setLineHasSecond(prev => prev.map((v, j) => j === i ? false : v));
+                                          setLineMappedSku2(prev => prev.map((v, j) => j === i ? "" : v));
+                                        }}
+                                        className="shrink-0 w-6 h-6 flex items-center justify-center rounded border border-[var(--border)] text-[var(--muted)] hover:border-red-400 hover:text-red-400 text-xs"
+                                      >×</button>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -422,8 +464,10 @@ export default function InvoiceUploadModal() {
                   {type === "in" && parsedLines.length > 0 && (() => {
                     const grouped: Record<string, number> = {};
                     parsedLines.forEach((l, i) => {
-                      const sku = lineMappedSku[i];
-                      if (lineChecked[i] && sku) grouped[sku] = (grouped[sku] ?? 0) + Math.round(l.quantity);
+                      if (!lineChecked[i]) return;
+                      const qty = Math.round(l.quantity);
+                      if (lineMappedSku[i])  grouped[lineMappedSku[i]]  = (grouped[lineMappedSku[i]]  ?? 0) + qty;
+                      if (lineMappedSku2[i]) grouped[lineMappedSku2[i]] = (grouped[lineMappedSku2[i]] ?? 0) + qty;
                     });
                     const entries = Object.entries(grouped);
                     if (entries.length === 0) return null;
