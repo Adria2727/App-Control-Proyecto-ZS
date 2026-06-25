@@ -135,7 +135,9 @@ function BomTable({ lines }: { lines: BomLine[] }) {
               <td className="py-1 pr-3 capitalize text-[var(--muted)]">{l.component.category_code.toLowerCase()}</td>
               <td className="py-1 pr-3 text-right tabular-nums">{l.quantity}</td>
               <td className="py-1">
-                {l.color_varies ? (
+                {l.component.category_code === "PATES" ? (
+                  <span className="text-xs px-2 py-0.5 rounded-full border border-black/10 bg-gray-100 text-gray-600">blanc / negre</span>
+                ) : l.color_varies ? (
                   <span className="text-[var(--muted)] italic">segons color</span>
                 ) : l.component.color_code ? (
                   <ColorChip code={l.component.color_code} />
