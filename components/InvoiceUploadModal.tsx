@@ -117,12 +117,21 @@ export default function InvoiceUploadModal() {
           .then(({ data }) => setAllComponents((data ?? []) as ComponentOption[]));
       }
     }
-    if (type === "out" && allProducts.length === 0) {
-      supabase.from("products")
-        .select("id, code, name, tenant_id")
-        .eq("bom_active", true)
-        .order("tenant_id").order("code")
-        .then(({ data }) => setAllProducts((data ?? []) as ProductOption[]));
+    if (type === "out") {
+      if (parsed?.line_items && parsedLines.length === 0) {
+        const lines: ParsedLineItem[] = parsed.line_items;
+        setParsedLines(lines);
+        setLineChecked(lines.map(() => true));
+        setLineMappedSku(lines.map((l: any) => l.suggested_code ?? ""));
+        setLineMappedSku2(lines.map(() => ""));
+        setLineHasSecond(lines.map(() => false));
+      }
+      if (allProducts.length === 0) {
+        supabase.from("products")
+          .select("id, code, name, tenant_id")
+          .order("tenant_id").order("code")
+          .then(({ data }) => setAllProducts((data ?? []) as ProductOption[]));
+      }
     }
   }, [step, type]);
 
@@ -219,27 +228,31 @@ export default function InvoiceUploadModal() {
         }).select("id").single();
         if (dbErr) throw new Error(dbErr.message);
 
-        if (withInventory && outLines.length > 0) {
-          for (const line of outLines) {
+        if (withInventory) {
+          for (let i = 0; i < parsedLines.length; i++) {
+            if (!lineChecked[i] || !lineMappedSku[i]) continue;
+            const prod = allProducts.find(p => p.code === lineMappedSku[i]);
+            if (!prod) continue;
+            const qty = Math.round(parsedLines[i].quantity);
+
             await supabase.from("invoice_out_lines").insert({
-              invoice_id: inv!.id, product_id: line.product.id, quantity: line.quantity,
+              invoice_id: inv!.id, product_id: prod.id, quantity: qty,
             });
 
-            // Expandim el BOM i restem cada component
             const { data: bomLines } = await supabase
               .from("bom")
               .select("quantity, component:components(id)")
-              .eq("product_id", line.product.id);
+              .eq("product_id", prod.id);
 
             for (const bom of bomLines ?? []) {
               const comp = bom.component as unknown as { id: number };
-              const delta = Math.round(Number(bom.quantity) * line.quantity);
+              const delta = Math.round(Number(bom.quantity) * qty);
               await supabase.rpc("adjust_stock", { comp_id: comp.id, delta: -delta });
               await supabase.from("stock_movements").insert({
                 component_id: comp.id,
                 movement_type: "OUT",
                 quantity: delta,
-                reason: `Factura venda ${parsed.invoice_number} — ${line.product.code} ×${line.quantity}`,
+                reason: `Factura venda ${parsed.invoice_number} — ${prod.code} ×${qty}`,
               });
             }
           }
@@ -486,52 +499,68 @@ export default function InvoiceUploadModal() {
                     );
                   })()}
 
-                  {/* Formulari afegir línia OUT */}
-                  {type === "out" && (
-                    <div className="space-y-2">
-                      <select value={lineProd?.id ?? ""} onChange={e => {
-                          const p = allProducts.find(x => x.id === Number(e.target.value)) ?? null;
-                          setLineProd(p);
-                        }}
-                        className="select w-full text-sm">
-                        <option value="">— Selecciona producte —</option>
-                        {["BUMBBA","SUNBBA"].map(t => (
-                          <optgroup key={t} label={t}>
-                            {allProducts.filter(p => p.tenant_id === t).map(p => (
-                              <option key={p.id} value={p.id}>{p.code} — {p.name}</option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-                      <div className="flex gap-2">
-                        <input type="number" min={1} value={lineQty} onChange={e => setLineQty(Number(e.target.value))}
-                          className="select w-24 text-sm" placeholder="Qty" />
-                        <button onClick={addOutLine} disabled={!lineProd || lineQty <= 0}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
-                          style={{ background: "var(--bumbba)" }}>
-                          + Afegir
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Llistat de línies afegides */}
-                  {/* Llistat OUT manual */}
-                  {type === "out" && outLines.length > 0 && (
-                    <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] overflow-hidden">
-                      <div className="text-xs font-medium text-[var(--muted)] px-3 py-2 border-b border-[var(--border)]">Línies afegides</div>
-                      {outLines.map((l, i) => (
-                        <div key={i} className="flex items-center justify-between px-3 py-2 text-sm border-b border-[var(--border)] last:border-0">
-                          <span>{l.product.code} — {l.product.name}</span>
-                          <div className="flex items-center gap-3">
-                            <span className="font-semibold text-red-500">−{l.quantity} u.</span>
-                            <button onClick={() => setOutLines(prev => prev.filter((_, j) => j !== i))}
-                              className="text-[var(--muted)] hover:text-red-500 text-xs">✕</button>
+                  {/* Línies parsejades del PDF — OUT */}
+                  {type === "out" && parsedLines.length > 0 && (
+                    <div className="space-y-1">
+                      {parsedLines.map((l, i) => (
+                        <div key={i} className={`rounded-lg border px-3 py-2 text-xs ${lineChecked[i] ? "border-[var(--bumbba)]/40 bg-[var(--bumbba)]/5" : "border-[var(--border)] opacity-50"}`}>
+                          <div className="flex items-start gap-2">
+                            <input type="checkbox" checked={lineChecked[i]}
+                              onChange={e => setLineChecked(prev => prev.map((v, j) => j === i ? e.target.checked : v))}
+                              className="mt-0.5 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between gap-2">
+                                <span className="font-medium truncate">{l.description}</span>
+                                <span className="shrink-0 tabular-nums text-[var(--muted)]">× {l.quantity} u.</span>
+                              </div>
+                              {lineChecked[i] && (
+                                <div className="mt-1.5">
+                                  <select
+                                    value={lineMappedSku[i]}
+                                    onChange={e => setLineMappedSku(prev => prev.map((v, j) => j === i ? e.target.value : v))}
+                                    className="w-full text-xs rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1"
+                                  >
+                                    <option value="">— Selecciona producte —</option>
+                                    {["BUMBBA","SUNBBA"].map(t => (
+                                      <optgroup key={t} label={t}>
+                                        {allProducts.filter(p => p.tenant_id === t).map(p => (
+                                          <option key={p.id} value={p.code}>{p.code} — {p.name}</option>
+                                        ))}
+                                      </optgroup>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
+
+                  {/* Resum agrupat OUT */}
+                  {type === "out" && parsedLines.length > 0 && (() => {
+                    const grouped: Record<string, number> = {};
+                    parsedLines.forEach((l, i) => {
+                      const code = lineMappedSku[i];
+                      if (lineChecked[i] && code) grouped[code] = (grouped[code] ?? 0) + Math.round(l.quantity);
+                    });
+                    const entries = Object.entries(grouped);
+                    if (entries.length === 0) return null;
+                    return (
+                      <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] p-3">
+                        <p className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wide mb-2">Resum — sortirà de stock (via BOM)</p>
+                        <div className="space-y-1">
+                          {entries.map(([code, qty]) => (
+                            <div key={code} className="flex justify-between text-xs">
+                              <span className="font-mono text-[var(--muted)]">{code}</span>
+                              <span className="font-semibold text-red-500">−{qty} u.</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div className="flex gap-2 pt-1">
                     <button onClick={() => handleSave(false)}
@@ -540,7 +569,7 @@ export default function InvoiceUploadModal() {
                     </button>
                     <button
                       onClick={() => handleSave(true)}
-                      disabled={type === "out" ? outLines.length === 0 : !lineChecked.some((v, i) => v && lineMappedSku[i])}
+                      disabled={!lineChecked.some((v, i) => v && lineMappedSku[i])}
                       className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
                       style={{ background: "var(--bumbba)" }}>
                       Guardar i actualitzar stock
@@ -563,7 +592,7 @@ export default function InvoiceUploadModal() {
                   <div className="text-4xl">✅</div>
                   <p className="font-medium">Factura guardada correctament</p>
                   <p className="text-xs text-[var(--muted)]">
-                    {(type === "in" ? lineChecked.some(Boolean) : outLines.length > 0)
+                    {lineChecked.some((v, i) => v && lineMappedSku[i])
                       ? "Finances i inventari actualitzats."
                       : "Guardada a Finances. Inventari no modificat."}
                   </p>
