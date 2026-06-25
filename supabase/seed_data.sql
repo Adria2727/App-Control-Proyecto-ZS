@@ -55,8 +55,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('HOTGLUE',     'Cola Calenta',            'BUMBBA','ALTRES',      null, 300),
   ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  78),
   -- ESTRUCTURES
-  ('L_GR',  'L Gran',   'BUMBBA','ESTRUCTURES','E1', 290),
-  ('L_PT',  'L Petita', 'BUMBBA','ESTRUCTURES','E1', 315),
   ('BRAC',  'Braç',     'BUMBBA','ESTRUCTURES','E1',  66),
   -- MATALASSOS
   ('MAT_190','Matalàs 190','BUMBBA','MATALASSOS','E1', 131),
@@ -68,7 +66,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('CAJA_B',    'Caixa Bumbba',      'BUMBBA','EMBALATGE','E1',  260),
   ('CAJA_PLAIN','Caixa Plain',       'BUMBBA','EMBALATGE','E1',  -16),
   ('CAJA_PUF',  'Caixa Pouf',        'BUMBBA','EMBALATGE','E1',  -17),
-  ('BOSSA',     'Bossa Buit',        'BUMBBA','EMBALATGE','E2',  428),
   ('MAN_ES',    'Manual Bumbba ES',  'BUMBBA','EMBALATGE','E0',  184),
   ('MAN_EN',    'Manual Bumbba EN',  'BUMBBA','EMBALATGE','E0',  190),
   ('MAN_BASE',  'Manual Bumbba Base','BUMBBA','EMBALATGE','E0',  -74),
@@ -97,8 +94,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FARCIT_CR_M', 'Farcit Mitjà',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_PT',   'Farcit Petit', 'SUNBBA','ALTRES',  'E3',  0),
   -- ESTRUCTURES
-  ('L_GR',  'L Gran',   'SUNBBA','ESTRUCTURES','E1', -4),
-  ('L_PT',  'L Petita', 'SUNBBA','ESTRUCTURES','E1',  0),
   -- MATALASSOS
   ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 101),
   ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1',   4),
@@ -107,7 +102,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- EMBALATGE
   ('CAJA_S',  'Caixa Sunbba', 'SUNBBA','EMBALATGE','E1',  196),
   ('CAJA_PUF','Caixa Pouf',   'SUNBBA','EMBALATGE','E1',    0),
-  ('BOSSA',   'Bossa Buit',   'SUNBBA','EMBALATGE','E2',    0),
   ('MAN_S',   'Manual Sunbba','SUNBBA','EMBALATGE','E0',   -2),
   ('MAN_PUF', 'Manual Pouf',  'SUNBBA','EMBALATGE','E0',    0),
   ('ETIQ',    'Etiqueta Sunbba','SUNBBA','EMBALATGE','E0', -4)
@@ -124,7 +118,10 @@ values ('SHARED', 'Compartit', null, true)
 on conflict (id) do nothing;
 
 insert into components (sku, name, tenant_id, category_code, station, stock_actual) values
-  ('POT','Potes','SHARED','PATES','E0', 688)
+  ('POT',  'Potes',    'SHARED','PATES',      'E0', 688),
+  ('L_GR', 'L Gran',   'SHARED','ESTRUCTURES','E1', 286),
+  ('L_PT', 'L Petita', 'SHARED','ESTRUCTURES','E1', 315),
+  ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 428)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
       category_code=excluded.category_code, station=excluded.station;
