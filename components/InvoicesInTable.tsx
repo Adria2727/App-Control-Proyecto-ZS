@@ -43,6 +43,7 @@ export default function InvoicesInTable({
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [amountSearch, setAmountSearch] = useState("");
+  const [baseSearch, setBaseSearch] = useState("");
 
   const todayDate = new Date(today);
 
@@ -52,14 +53,15 @@ export default function InvoicesInTable({
       if (dateFrom && inv.invoice_date < dateFrom) return false;
       if (dateTo && inv.invoice_date > dateTo) return false;
       if (amountSearch && !String(inv.total_amount).includes(amountSearch.replace(",", "."))) return false;
+      if (baseSearch && !String(inv.base_amount).includes(baseSearch.replace(",", "."))) return false;
       return true;
     });
-  }, [invoicesIn, supplierFilter, dateFrom, dateTo, amountSearch]);
+  }, [invoicesIn, supplierFilter, dateFrom, dateTo, amountSearch, baseSearch]);
 
   const filteredTotal = filtered.reduce((s, i) => s + i.total_amount, 0);
   const filteredBase  = filtered.reduce((s, i) => s + i.base_amount, 0);
 
-  const hasFilter = supplierFilter || dateFrom || dateTo || amountSearch;
+  const hasFilter = supplierFilter || dateFrom || dateTo || amountSearch || baseSearch;
 
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
@@ -102,6 +104,16 @@ export default function InvoicesInTable({
           />
         </div>
         <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--muted)] font-medium">Base imponible</label>
+          <input
+            type="text"
+            placeholder="ex: 1644.00"
+            value={baseSearch}
+            onChange={(e) => setBaseSearch(e.target.value)}
+            className="text-sm border border-[var(--border)] rounded-lg px-3 py-1.5 bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--bumbba)] w-36"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
           <label className="text-xs text-[var(--muted)] font-medium">Import total</label>
           <input
             type="text"
@@ -113,7 +125,7 @@ export default function InvoicesInTable({
         </div>
         {hasFilter && (
           <button
-            onClick={() => { setSupplierFilter(""); setDateFrom(""); setDateTo(""); setAmountSearch(""); }}
+            onClick={() => { setSupplierFilter(""); setDateFrom(""); setDateTo(""); setAmountSearch(""); setBaseSearch(""); }}
             className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline pb-1.5"
           >
             Netejar filtres
