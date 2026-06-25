@@ -21,11 +21,11 @@ export const metadata: Metadata = {
 
 const nav = [
   { href: "/", label: "Dashboard" },
+  { href: "/finances", label: "Finances" },
   { href: "/inventari", label: "Inventari" },
+  { href: "/marges", label: "Marges" },
   { href: "/productes", label: "Productes" },
   { href: "/alertes", label: "Alertes" },
-  { href: "/marges", label: "Marges" },
-  { href: "/finances", label: "Finances" },
 ];
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
