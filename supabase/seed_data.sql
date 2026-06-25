@@ -48,9 +48,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FUN_PUF',     'Funda Pouf',              'BUMBBA','TELA',       'E1',   0),
   ('FUN_PUF_INT', 'Funda Interior Pouf',     'BUMBBA','TELA',       'E1',   0),
   -- FARCITS / ALTRES
-  ('FARCIT_GR',   'Farcit Gran',             'BUMBBA','ALTRES',     'E3', 156),
-  ('FARCIT_PT',   'Farcit Petit',            'BUMBBA','ALTRES',     'E3', 390),
-  ('FARCIT_CR_M', 'Farcit Mitjà',             'BUMBBA','ALTRES',     'E3',  40),
   ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  18),
   ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  18),
   -- ESTRUCTURES
@@ -88,9 +85,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FUN_PUF_INT', 'Funda Interior Pouf',   'SUNBBA','TELA','E1',   0),
   -- ALTRES
   ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  0),
-  ('FARCIT_GR',   'Farcit Gran',  'SUNBBA','ALTRES',  'E3',  0),
-  ('FARCIT_CR_M', 'Farcit Mitjà',  'SUNBBA','ALTRES',  'E3',  0),
-  ('FARCIT_PT',   'Farcit Petit', 'SUNBBA','ALTRES',  'E3',  0),
   -- ESTRUCTURES
   -- MATALASSOS
   ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 0),
@@ -120,6 +114,9 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('L_PT', 'L Petita', 'SHARED','ESTRUCTURES','E1', 150),
   ('HOTGLUE','Cola Calenta','SHARED','ALTRES',      null, 250),
   ('ETIQ',   'Etiqueta',    'SHARED','EMBALATGE',   'E0', 700),
+  ('FARCIT_GR',   'Farcit Gran',  'SHARED','ALTRES',     'E3', 156),
+  ('FARCIT_CR_M', 'Farcit Mitjà',  'SHARED','ALTRES',     'E3',  40),
+  ('FARCIT_PT',   'Farcit Petit', 'SHARED','ALTRES',     'E3', 390),
   ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 300)
 on conflict (tenant_id, sku) do update
   set stock_actual=excluded.stock_actual, name=excluded.name,
