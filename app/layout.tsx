@@ -9,13 +9,13 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ZeroStock",
+  title: "Control Financer Projecte ZS",
   description: "Control de producció i inventari — Bumbba & Sunbba",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "ZeroStock",
+    title: "Control Financer Projecte ZS",
   },
 };
 
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <header className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-10">
           <div className="max-w-6xl mx-auto px-4 flex items-center gap-6 h-14">
             <Link href="/" className="font-bold text-lg tracking-tight">
-              Zero<span className="text-[var(--bumbba)]">Stock</span>
+              Control Financer <span className="text-[var(--bumbba)]">ZS</span>
             </Link>
             <nav className="flex gap-1 text-sm">
               {nav.map((n) => (

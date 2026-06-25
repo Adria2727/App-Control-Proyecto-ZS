@@ -35,9 +35,9 @@ export default function LoginPage() {
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-8 w-full max-w-sm shadow-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold tracking-tight">
-            Zero<span className="text-[var(--bumbba)]">Stock</span>
+            Control Financer <span className="text-[var(--bumbba)]">ZS</span>
           </h1>
-          <p className="text-sm text-[var(--muted)] mt-1">Control de producció</p>
+          <p className="text-sm text-[var(--muted)] mt-1">Projecte Zero Stock</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">

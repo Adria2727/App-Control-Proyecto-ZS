@@ -7,7 +7,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const TODAY = new Date().toISOString().split("T")[0];
 
-const SYSTEM = `Ets l'assistent intel·ligent de l'aplicació "Zero Stock" de l'empresa Estelle Parquet.
+const SYSTEM = `Ets l'assistent intel·ligent de l'aplicació "Control Financer Projecte ZS" de l'empresa Estelle Parquet.
 Gestionen la producció de sofàs de les marques BUMBBA i SUNBBA fabricats a Amposta.
 Respons sempre en català, de forma concisa i directa. Si cal, usa listes curtes.
 Avui és ${TODAY}.

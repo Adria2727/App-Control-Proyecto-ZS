@@ -95,7 +95,7 @@ export default async function FinancesPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">Finances</h1>
-          <p className="text-[var(--muted)] text-sm">Control de tresoreria i facturació — Projecte Zero Stock</p>
+          <p className="text-[var(--muted)] text-sm">Control de tresoreria i facturació — Projecte ZS</p>
         </div>
         <div className="flex gap-2">
           <DeliveryNoteModal components={components} />

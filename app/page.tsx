@@ -82,7 +82,7 @@ export default async function Dashboard() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-[var(--muted)] text-sm">Visió financera · Projecte Zero Stock</p>
+          <p className="text-[var(--muted)] text-sm">Visió financera · Projecte ZS</p>
         </div>
         <span className="text-xs text-[var(--muted)]">{TODAY.toLocaleDateString("ca-ES", { day: "2-digit", month: "long", year: "numeric" })}</span>
       </div>
