@@ -84,11 +84,12 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FUN_PUF',     'Funda Pouf',            'SUNBBA','TELA','E1',   0),
   ('FUN_PUF_INT', 'Funda Interior Pouf',   'SUNBBA','TELA','E1',   0),
   -- ALTRES
-  ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  0),
+  ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1', 26),
   -- ESTRUCTURES
+  ('BRAC','Braç','SUNBBA','ESTRUCTURES','E1', 54),
   -- MATALASSOS
-  ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 0),
-  ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1', 0),
+  ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 93),
+  ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1', 24),
   -- WIP
   ('POUF_ENF','Pouf Enfundat','SUNBBA','ALTRES','E1', 0),
   -- EMBALATGE
