@@ -277,7 +277,7 @@ join lateral (values
   ('Etiqueta Bumbba', null, 1, 'E0', false),
   ('Cola Calenta', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='1P';
 
 -- ── BUMBBA 2P ──
@@ -291,11 +291,11 @@ join lateral (values
   ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Mitjà Muntat','PGC', 2, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 160','PGC', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='2P';
 
 -- ── BUMBBA 3P ──
@@ -304,17 +304,15 @@ select p.id, c.id, v.qty, v.station, v.cv
 from products p
 join lateral (values
   ('Matalàs 190','PGC', 2, 'E1', true),
-  ('L Gran','PGC', 2, 'E1', true),
-  ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Gran Muntat','PGC', 2, 'KANBAN', true),
   ('Caixa Bumbba', null::text, 2, 'E1', false),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Etiqueta Bumbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
   ('Funda Matalàs 190','PGC', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='3P';
 
 -- ── BUMBBA CHL ──
@@ -328,11 +326,11 @@ join lateral (values
   ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Gran Muntat','PGC', 3, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 190','PGC', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CHL';
 
 -- ── BUMBBA CRN ──
@@ -347,11 +345,11 @@ join lateral (values
   ('Coixí Gran Muntat','PGC', 3, 'KANBAN', true),
   ('Coixí Petit Muntat','PGC', 2, 'KANBAN', true),
   ('Coixí Rinconera Muntat','PGC', 1, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Bumbba ES', null, 1, 'E0', false),
   ('Funda Matalàs 190','PGC', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CRN';
 
 -- ── BUMBBA PUF ──
@@ -365,7 +363,7 @@ join lateral (values
   ('Funda Pouf','PGC', 1, 'E1', true),
   ('Funda Interior Pouf', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='PUF';
 
 -- ── BUMBBA BRAZO ──
@@ -378,7 +376,7 @@ join lateral (values
   ('Manual Pouf/Braços', null, 1, 'E0', false),
   ('Funda Braç','PGC', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='BRAZO';
 
 -- ── BUMBBA CR / CR_M / MC / RAC ──
@@ -391,7 +389,7 @@ join lateral (values
   ('Bossa Buit', null, 1, 'E2', false),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CR';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -403,7 +401,7 @@ join lateral (values
   ('Bossa Buit', null, 1, 'E2', false),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CR_M';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -414,7 +412,7 @@ join lateral (values
   ('Funda Coixí Petit','PGC', 1, 'E3', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='MC';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -426,7 +424,7 @@ join lateral (values
   ('Bossa Buit', null, 1, 'E2', false),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='RAC';
 
 -- ── BUMBBA CL190 / CL160 ──
@@ -437,7 +435,7 @@ join lateral (values
   ('Matalàs 190','PGC', 1, 'E1', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CL190';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -447,7 +445,7 @@ join lateral (values
   ('Matalàs 160','PGC', 1, 'E1', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='CL160';
 
 -- ── BUMBBA TB_IND / TB_IND_P ──
@@ -459,7 +457,7 @@ join lateral (values
   ('Potes Blanques', null, 4, 'E0', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='TB_IND';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -470,7 +468,7 @@ join lateral (values
   ('Potes Blanques', null, 4, 'E0', true),
   ('Caixa Plain', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'BB_%'
+join components c on c.tenant_id='BUMBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='BUMBBA' and p.code='TB_IND_P';
 
 -- ── SUNBBA 1P ──
@@ -487,7 +485,7 @@ join lateral (values
   ('Etiqueta Sunbba', null, 1, 'E0', false),
   ('Cola Calenta', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='1P';
 
 -- ── SUNBBA 2P ──
@@ -499,13 +497,13 @@ join lateral (values
   ('Matalàs 160','PC04', 2, 'E1', true),
   ('L Gran','PC04', 2, 'E1', true),
   ('Coixí Mitjà Muntat','PC04', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
   ('Funda Matalàs 160','PC04', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='2P';
 
 -- ── SUNBBA 3P ──
@@ -516,15 +514,14 @@ join lateral (values
   ('Caixa Sunbba', null::text, 2, 'E1', false),
   ('Matalàs 190','PC04', 2, 'E1', true),
   ('L Gran','PC04', 2, 'E1', true),
-  ('L Petita','PC04', 2, 'E1', true),
   ('Coixí Gran Muntat','PC04', 2, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 2, 'E0', false),
   ('Cola Calenta', null, 2, 'E1', false),
   ('Funda Matalàs 190','PC04', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='3P';
 
 -- ── SUNBBA CHL_190_160 ──
@@ -537,14 +534,14 @@ join lateral (values
   ('Matalàs 160','PC04', 2, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Gran Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 24, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
   ('Etiqueta Sunbba', null, 4, 'E0', false),
   ('Cola Calenta', null, 4, 'E1', false),
   ('Funda Matalàs 190','PC04', 2, 'E1', true),
   ('Funda Matalàs 160','PC04', 2, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='CHL_190_160';
 
 -- ── SUNBBA CHLB ──
@@ -556,10 +553,10 @@ join lateral (values
   ('Matalàs 190','PC04', 4, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Gran Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 24, 'E0', true),
   ('Funda Matalàs 190','PC04', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='CHLB';
 
 -- ── SUNBBA CHLS ──
@@ -571,10 +568,10 @@ join lateral (values
   ('Matalàs 160','PC04', 4, 'E1', true),
   ('L Gran','PC04', 3, 'E1', true),
   ('Coixí Mitjà Muntat','PC04', 3, 'KANBAN', true),
-  ('Potes Blanques', null, 6, 'E0', true),
+  ('Potes Blanques', null, 24, 'E0', true),
   ('Funda Matalàs 160','PC04', 4, 'E1', true)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='CHLS';
 
 -- ── SUNBBA CR / CR_M / MC ──
@@ -587,7 +584,7 @@ join lateral (values
   ('Bossa Buit', null, 1, 'E2', false),
   ('Caixa Sunbba', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='CR';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -599,7 +596,7 @@ join lateral (values
   ('Bossa Buit', null, 1, 'E2', false),
   ('Caixa Sunbba', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='CR_M';
 
 insert into bom (product_id, component_id, quantity, station, color_varies)
@@ -610,7 +607,7 @@ join lateral (values
   ('Funda Coixí Petit','PC04', 1, 'E3', true),
   ('Caixa Sunbba', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='MC';
 
 -- ── SUNBBA PUF ──
@@ -626,7 +623,7 @@ join lateral (values
   ('Funda Interior Pouf', null, 1, 'E1', false),
   ('Cola Calenta', null, 1, 'E1', false)
 ) as v(cname,ccolor,qty,station,cv) on true
-join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor and c.sku not like 'SB_%'
+join components c on c.tenant_id='SUNBBA' and c.name=v.cname and c.color_code is not distinct from v.ccolor
 where p.tenant_id='SUNBBA' and p.code='PUF';
 
 -- ============================================================================
