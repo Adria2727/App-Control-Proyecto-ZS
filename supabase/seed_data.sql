@@ -67,7 +67,7 @@ insert into components (sku, name, tenant_id, category_code, color_code, station
   -- ALTRES / FARCITS
   ('FARCIT_GR','Farcit Gran','BUMBBA','ALTRES',null,'E3',250),
   ('FARCIT_PT','Farcit Petit','BUMBBA','ALTRES',null,'E3',272),
-  ('FARCIT_CRM','Farcit Medi','BUMBBA','ALTRES',null,'E3',37),
+  ('FARCIT_CR_M','Farcit Medi','BUMBBA','ALTRES',null,'E3',37),
   ('FARCIT_RAC','Farcit Rinconera','BUMBBA','ALTRES',null,'E3',14),
   ('HOTGLUE','Cola Calenta','BUMBBA','ALTRES',null,null,300),
   ('NUCLI_PUF','Nucli Pouf','BUMBBA','ALTRES','PVC','E1',16),
@@ -164,7 +164,7 @@ insert into components (sku, name, tenant_id, category_code, color_code, station
   ('NUCLI_PUF','Nucli Pouf','SUNBBA','ALTRES','PC99','E1',2),
   ('HOTGLUE','Cola Calenta','SUNBBA','ALTRES',null,null,-4),
   ('FARCIT_GR','Farcit Gran','SUNBBA','ALTRES',null,'E3',0),
-  ('FARCIT_CRM','Farcit Medi','SUNBBA','ALTRES',null,'E3',0),
+  ('FARCIT_CR_M','Farcit Medi','SUNBBA','ALTRES',null,'E3',0),
   ('FARCIT_PT','Farcit Petit','SUNBBA','ALTRES',null,'E3',0),
   -- ESTRUCTURES "L" (prov. Lacats V.F) — ~0 a tots els colors
   ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC04','E1',0),
