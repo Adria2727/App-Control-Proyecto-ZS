@@ -30,6 +30,11 @@ on conflict (tenant_id, code) do update
   set name=excluded.name, l_suffix=excluded.l_suffix, is_active=excluded.is_active;
 
 -- ============================================================================
+-- NETEJAR ABANS (evita duplicats per NULLs)
+delete from bom;
+delete from stock_movements;
+delete from components;
+
 -- COMPONENTS — BUMBBA (sku, name, category, color, station, stock)
 -- ============================================================================
 insert into components (sku, name, tenant_id, category_code, color_code, station, stock_actual) values
@@ -257,7 +262,7 @@ on conflict (tenant_id, code) do update
 -- Si un component no existeix, simplement no insereix aquella línia (segur).
 -- Es neteja primer el BOM de cada tenant per evitar duplicats en re-execució.
 -- ============================================================================
-delete from bom where product_id in (select id from products where tenant_id in ('BUMBBA','SUNBBA'));
+
 
 -- Helper: insereix línies BOM d'un producte donat tenant+code i una llista de
 -- (component_name, color_code|null, qty, station, color_varies)
