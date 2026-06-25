@@ -46,6 +46,8 @@ Regles per suggested_sku:
 - BACKREST PILLOW (farcit gran) → FARCIT_GR
 - SMALL PILLOW AUX (farcit petit) → FARCIT_PT
 - CORNER PILLOW (farcit, codi PUM) → FARCIT_RAC
+- CURVAS GRANDES / CURVA GRANDE (proveïdor Lacats, qualsevol RAL) → L_GR, to_inventory: true
+- CURVAS PEQUEÑAS / CURVA PEQUEÑA (proveïdor Lacats, qualsevol RAL) → L_PT, to_inventory: true
 - FABRIC (metres de tela) → null, to_inventory: false
 - TRANSPORT / CARGO → null, to_inventory: false
 - EMBALAJE (caixes) → CAJA_B si és per sofà gran, CAJA_PUF si és pouf
