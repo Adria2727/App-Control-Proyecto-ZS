@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { InvoiceOut, InvoiceIn } from "@/lib/types";
 import { normalizeInvoices } from "@/lib/invoice-utils";
 import InvoiceUploadModal from "@/components/InvoiceUploadModal";
+import InvoicesInTable from "@/components/InvoicesInTable";
 
 export const dynamic = "force-dynamic";
 
@@ -214,54 +215,12 @@ export default async function FinancesPage() {
       </div>
 
       {/* ── Factures rebudes ── */}
-      <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between">
-          <div>
-            <h2 className="font-semibold">Factures rebudes — compres a proveïdors</h2>
-            <p className="text-xs text-[var(--muted)] mt-0.5">Materials i serveis del Projecte Zero Stock</p>
-          </div>
-          <span className="text-sm font-semibold tabular-nums">{fmt(totalCompres)}</span>
-        </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-[var(--muted)] border-b border-[var(--border)] bg-[var(--background)]">
-              <th className="px-3 py-2">Data</th>
-              <th className="px-3 py-2">Proveïdor</th>
-              <th className="px-3 py-2">Categoria</th>
-              <th className="px-3 py-2 text-right">Base</th>
-              <th className="px-3 py-2 text-right">Total (IVA)</th>
-              <th className="px-3 py-2">Venciment</th>
-              <th className="px-3 py-2">Estat</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoicesIn.map(inv => {
-              const isOverdue = inv.status !== "paid" && inv.due_date && daysTo(inv.due_date) < 0;
-              return (
-                <tr key={inv.id} className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--background)] ${isOverdue ? "bg-red-50/30" : ""}`}>
-                  <td className="px-3 py-2 text-[var(--muted)]">{fmtDate(inv.invoice_date)}</td>
-                  <td className="px-3 py-2 font-medium text-xs">{inv.supplier}</td>
-                  <td className="px-3 py-2 capitalize text-[var(--muted)]">{inv.category}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{fmt(inv.base_amount)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums font-semibold">{fmt(inv.total_amount)}</td>
-                  <td className={`px-3 py-2 ${isOverdue ? "text-[var(--negative)] font-medium" : "text-[var(--muted)]"}`}>
-                    {inv.due_date ? fmtDate(inv.due_date) : "—"}
-                  </td>
-                  <td className="px-3 py-2"><StatusBadge status={isOverdue ? "overdue" : inv.status} /></td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr className="bg-[var(--background)] border-t-2 border-[var(--border)]">
-              <td colSpan={3} className="px-3 py-2 font-semibold text-[var(--muted)]">TOTAL</td>
-              <td className="px-3 py-2 text-right tabular-nums font-semibold">{fmt(invoicesIn.reduce((s,i)=>s+i.base_amount,0))}</td>
-              <td className="px-3 py-2 text-right tabular-nums font-bold">{fmt(totalCompres)}</td>
-              <td colSpan={2} />
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <InvoicesInTable
+        invoicesIn={invoicesIn}
+        totalCompres={totalCompres}
+        today="2026-06-18"
+      />
+
     </div>
   );
 }
