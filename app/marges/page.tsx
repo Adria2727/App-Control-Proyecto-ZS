@@ -65,9 +65,9 @@ export default async function MargesPage() {
             <div className="divide-y divide-[var(--border)]">
               {tenantProducts.map(product => {
                 const lines = product.bom ?? [];
-                const missingCost = lines.filter(l => l.component && l.component.cost_unitari === 0);
+                const missingCost = lines.filter(l => l.component && l.component.cost_unitari == null);
                 const totalCost = lines.reduce((sum, l) => {
-                  if (!l.component) return sum;
+                  if (!l.component || l.component.cost_unitari == null) return sum;
                   return sum + l.quantity * l.component.cost_unitari;
                 }, 0);
 
@@ -110,8 +110,8 @@ export default async function MargesPage() {
                         <tbody>
                           {lines.map((line, idx) => {
                             if (!line.component) return null;
-                            const subtotal = line.quantity * line.component.cost_unitari;
-                            const missing = line.component.cost_unitari === 0;
+                            const missing = line.component.cost_unitari == null;
+                            const subtotal = missing ? 0 : line.quantity * line.component.cost_unitari;
                             return (
                               <tr key={idx} className={`border-t border-[var(--border)] ${missing ? "text-amber-600" : ""}`}>
                                 <td className="py-1 pr-2">{line.component.name}</td>
