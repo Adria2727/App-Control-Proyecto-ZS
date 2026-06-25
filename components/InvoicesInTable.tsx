@@ -119,6 +119,7 @@ export default function InvoicesInTable({
           <tr className="text-left text-[var(--muted)] border-b border-[var(--border)] bg-[var(--background)]">
             <th className="px-3 py-2">Data</th>
             <th className="px-3 py-2">Proveïdor</th>
+            <th className="px-3 py-2">Nº Factura</th>
             <th className="px-3 py-2">Categoria</th>
             <th className="px-3 py-2 text-right">Base</th>
             <th className="px-3 py-2 text-right">Total (IVA)</th>
@@ -129,7 +130,7 @@ export default function InvoicesInTable({
         <tbody>
           {filtered.length === 0 ? (
             <tr>
-              <td colSpan={7} className="px-3 py-8 text-center text-[var(--muted)] text-sm">
+              <td colSpan={8} className="px-3 py-8 text-center text-[var(--muted)] text-sm">
                 Cap factura coincideix amb els filtres aplicats.
               </td>
             </tr>
@@ -143,6 +144,7 @@ export default function InvoicesInTable({
                 >
                   <td className="px-3 py-2 text-[var(--muted)]">{fmtDate(inv.invoice_date)}</td>
                   <td className="px-3 py-2 font-medium text-xs">{inv.supplier}</td>
+                  <td className="px-3 py-2 font-mono text-xs text-[var(--muted)]">{inv.invoice_number}</td>
                   <td className="px-3 py-2 capitalize text-[var(--muted)]">{inv.category}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{fmt(inv.base_amount)}</td>
                   <td className="px-3 py-2 text-right tabular-nums font-semibold">{fmt(inv.total_amount)}</td>
@@ -159,7 +161,7 @@ export default function InvoicesInTable({
         </tbody>
         <tfoot>
           <tr className="bg-[var(--background)] border-t-2 border-[var(--border)]">
-            <td colSpan={3} className="px-3 py-2 font-semibold text-[var(--muted)]">
+            <td colSpan={4} className="px-3 py-2 font-semibold text-[var(--muted)]">
               {hasFilter ? `TOTAL FILTRAT` : "TOTAL"}
             </td>
             <td className="px-3 py-2 text-right tabular-nums font-semibold">{fmt(filteredBase)}</td>
