@@ -20,7 +20,7 @@ async function getData() {
   const [{ data: outData }, { data: inData }, { data: comps }] = await Promise.all([
     supabase.from("invoices_out").select("base_amount,total_amount,status,due_date,paid_date,invoice_date"),
     supabase.from("invoices_in").select("base_amount,total_amount,status,due_date,supplier,invoice_number,category"),
-    supabase.from("components").select("stock_actual,cost_unitari,tenant_id,name,color_code"),
+    supabase.from("components").select("stock_actual,cost_unitari,tenant_id,name"),
   ]);
   return {
     out: normalizeInvoices(outData ?? []),

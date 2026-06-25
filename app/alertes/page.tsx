@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function AlertesPage() {
   const { data } = await supabase
     .from("components")
-    .select("id,sku,name,tenant_id,category_code,color_code,station,stock_actual")
+    .select("id,sku,name,tenant_id,category_code,station,stock_actual")
     .lte("stock_actual", 0)
     .order("stock_actual");
 
@@ -52,7 +52,7 @@ function Section({ title, subtitle, rows }: { title: string; subtitle: string; r
                 </span>
               </td>
               <td className="px-4 py-2 font-medium">{c.name}</td>
-              <td className="px-4 py-2 text-[var(--muted)]">{c.color_code ?? "—"}</td>
+
               <td className="px-4 py-2 text-[var(--muted)]">{c.category_code}</td>
               <td className="px-4 py-2 text-right font-semibold tabular-nums"
                   style={{ color: c.stock_actual < 0 ? "var(--negative)" : undefined }}>

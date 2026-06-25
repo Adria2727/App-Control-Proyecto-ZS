@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     ] = await Promise.all([
       supabase
         .from("components")
-        .select("name,color_code,tenant_id,category,stock_actual,cost_unitari")
+        .select("name,tenant_id,category_code,stock_actual,cost_unitari")
         .order("tenant_id")
         .order("name"),
       supabase
