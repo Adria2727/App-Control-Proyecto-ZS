@@ -22,6 +22,17 @@ interface ProductOption {
   tenant_id: string;
 }
 
+interface ParsedLineItem {
+  supplier_code: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unit_price: number;
+  amount: number;
+  to_inventory: boolean;
+  suggested_sku: string | null;
+}
+
 interface InLine {
   component: ComponentOption;
   quantity: number;
@@ -59,25 +70,26 @@ export default function InvoiceUploadModal() {
   const [fileName, setFileName] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Línies d'inventari
-  const [inLines, setInLines]   = useState<InLine[]>([]);
+  // Línies d'inventari (OUT manual)
   const [outLines, setOutLines] = useState<OutLine[]>([]);
+
+  // Línies parsejades del PDF (IN)
+  const [parsedLines, setParsedLines]       = useState<ParsedLineItem[]>([]);
+  const [lineChecked, setLineChecked]       = useState<boolean[]>([]);
+  const [lineMappedSku, setLineMappedSku]   = useState<string[]>([]);
 
   // Dades per al selector de línies
   const [allComponents, setAllComponents] = useState<ComponentOption[]>([]);
   const [allProducts, setAllProducts]     = useState<ProductOption[]>([]);
 
-  // Inputs del formulari de línies
-  const [lineCompSearch, setLineCompSearch] = useState("");
-  const [lineComp, setLineComp]   = useState<ComponentOption | null>(null);
+  // Inputs del formulari OUT manual
   const [lineQty, setLineQty]     = useState(1);
   const [lineProd, setLineProd]   = useState<ProductOption | null>(null);
 
   function reset() {
     setStep("idle"); setParsed(null); setError(null); setFileName("");
-    setInLines([]); setOutLines([]);
-    setLineCompSearch(""); setLineComp(null); setLineQty(1);
-    setLineProd(null);
+    setOutLines([]); setParsedLines([]); setLineChecked([]); setLineMappedSku([]);
+    setLineQty(1); setLineProd(null);
     if (fileRef.current) fileRef.current.value = "";
   }
   function close() { setOpen(false); reset(); }
@@ -85,11 +97,20 @@ export default function InvoiceUploadModal() {
   // Carrega components/productes quan s'obre el pas "lines"
   useEffect(() => {
     if (step !== "lines") return;
-    if (type === "in" && allComponents.length === 0) {
-      supabase.from("components")
-        .select("id, sku, name, tenant_id, stock_actual")
-        .order("tenant_id").order("name")
-        .then(({ data }) => setAllComponents((data ?? []) as ComponentOption[]));
+    if (type === "in") {
+      // Inicialitza les línies parsejades del PDF
+      if (parsed?.line_items && parsedLines.length === 0) {
+        const lines: ParsedLineItem[] = parsed.line_items;
+        setParsedLines(lines);
+        setLineChecked(lines.map((l: ParsedLineItem) => l.to_inventory));
+        setLineMappedSku(lines.map((l: ParsedLineItem) => l.suggested_sku ?? ""));
+      }
+      if (allComponents.length === 0) {
+        supabase.from("components")
+          .select("id, sku, name, tenant_id, stock_actual")
+          .order("tenant_id").order("name")
+          .then(({ data }) => setAllComponents((data ?? []) as ComponentOption[]));
+      }
     }
     if (type === "out" && allProducts.length === 0) {
       supabase.from("products")
@@ -124,12 +145,6 @@ export default function InvoiceUploadModal() {
     }
   }
 
-  function addInLine() {
-    if (!lineComp || lineQty <= 0) return;
-    setInLines(prev => [...prev, { component: lineComp!, quantity: lineQty }]);
-    setLineComp(null); setLineCompSearch(""); setLineQty(1);
-  }
-
   function addOutLine() {
     if (!lineProd || lineQty <= 0) return;
     setOutLines(prev => [...prev, { product: lineProd!, quantity: lineQty }]);
@@ -158,16 +173,27 @@ export default function InvoiceUploadModal() {
         }).select("id").single();
         if (dbErr) throw new Error(dbErr.message);
 
-        if (withInventory && inLines.length > 0) {
-          for (const line of inLines) {
+        if (withInventory) {
+          // Agrupar línies marcades per SKU → sumar quantitats
+          const grouped: Record<string, number> = {};
+          parsedLines.forEach((l, i) => {
+            const sku = lineMappedSku[i];
+            if (lineChecked[i] && sku) {
+              grouped[sku] = (grouped[sku] ?? 0) + Math.round(l.quantity);
+            }
+          });
+
+          for (const [sku, qty] of Object.entries(grouped)) {
+            const comp = allComponents.find(c => c.sku === sku);
+            if (!comp) continue;
             await supabase.from("invoice_in_lines").insert({
-              invoice_id: inv!.id, component_id: line.component.id, quantity: line.quantity,
+              invoice_id: inv!.id, component_id: comp.id, quantity: qty,
             });
-            await supabase.rpc("adjust_stock", { comp_id: line.component.id, delta: line.quantity });
+            await supabase.rpc("adjust_stock", { comp_id: comp.id, delta: qty });
             await supabase.from("stock_movements").insert({
-              component_id: line.component.id,
+              component_id: comp.id,
               movement_type: "IN",
-              quantity: line.quantity,
+              quantity: qty,
               reason: `Factura compra ${parsed.invoice_number} — ${parsed.supplier}`,
             });
           }
@@ -221,13 +247,6 @@ export default function InvoiceUploadModal() {
       setStep("error");
     }
   }
-
-  // ── Filtres del selector de components ──────────────────────────────────
-  const filteredComponents = lineCompSearch.trim().length >= 2
-    ? allComponents.filter(c =>
-        `${c.name} ${c.sku}`.toLowerCase().includes(lineCompSearch.toLowerCase())
-      ).slice(0, 20)
-    : [];
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -358,39 +377,70 @@ export default function InvoiceUploadModal() {
                     </p>
                   </div>
 
-                  {/* Formulari afegir línia IN */}
-                  {type === "in" && (
-                    <div className="space-y-2">
-                      <div className="relative">
-                        <input
-                          value={lineCompSearch}
-                          onChange={e => { setLineCompSearch(e.target.value); setLineComp(null); }}
-                          placeholder="Cerca component (nom, SKU, color)…"
-                          className="select w-full text-sm"
-                        />
-                        {filteredComponents.length > 0 && !lineComp && (
-                          <div className="absolute top-full left-0 right-0 z-10 bg-[var(--card)] border border-[var(--border)] rounded-lg shadow-lg max-h-48 overflow-y-auto mt-1">
-                            {filteredComponents.map(c => (
-                              <button key={c.id} onClick={() => { setLineComp(c); setLineCompSearch(`${c.name} (${c.sku})`); }}
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background)] flex justify-between">
-                                <span>{c.name}</span>
-                                <span className="text-xs text-[var(--muted)]">stock: {c.stock_actual}</span>
-                              </button>
-                            ))}
+                  {/* Línies parsejades del PDF — IN */}
+                  {type === "in" && parsedLines.length > 0 && (
+                    <div className="space-y-1">
+                      {parsedLines.map((l, i) => (
+                        <div key={i} className={`rounded-lg border px-3 py-2 text-xs ${lineChecked[i] ? "border-[var(--bumbba)]/40 bg-[var(--bumbba)]/5" : "border-[var(--border)] opacity-50"}`}>
+                          <div className="flex items-start gap-2">
+                            <input type="checkbox" checked={lineChecked[i]}
+                              onChange={e => setLineChecked(prev => prev.map((v, j) => j === i ? e.target.checked : v))}
+                              className="mt-0.5 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between gap-2">
+                                <span className="font-medium truncate">{l.description}</span>
+                                <span className="shrink-0 tabular-nums text-[var(--muted)]">
+                                  {l.quantity} {l.unit}
+                                </span>
+                              </div>
+                              {lineChecked[i] && (
+                                <div className="mt-1.5">
+                                  <select
+                                    value={lineMappedSku[i]}
+                                    onChange={e => setLineMappedSku(prev => prev.map((v, j) => j === i ? e.target.value : v))}
+                                    className="w-full text-xs rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1"
+                                  >
+                                    <option value="">— Selecciona component —</option>
+                                    {["BUMBBA","SUNBBA"].map(t => (
+                                      <optgroup key={t} label={t}>
+                                        {allComponents.filter(c => c.tenant_id === t).map(c => (
+                                          <option key={c.id} value={c.sku}>{c.sku} — {c.name}</option>
+                                        ))}
+                                      </optgroup>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <input type="number" min={1} value={lineQty} onChange={e => setLineQty(Number(e.target.value))}
-                          className="select w-24 text-sm" placeholder="Qty" />
-                        <button onClick={addInLine} disabled={!lineComp || lineQty <= 0}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
-                          style={{ background: "var(--bumbba)" }}>
-                          + Afegir
-                        </button>
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  {/* Resum agrupat */}
+                  {type === "in" && parsedLines.length > 0 && (() => {
+                    const grouped: Record<string, number> = {};
+                    parsedLines.forEach((l, i) => {
+                      const sku = lineMappedSku[i];
+                      if (lineChecked[i] && sku) grouped[sku] = (grouped[sku] ?? 0) + Math.round(l.quantity);
+                    });
+                    const entries = Object.entries(grouped);
+                    if (entries.length === 0) return null;
+                    return (
+                      <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] p-3">
+                        <p className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wide mb-2">Resum — entrarà a stock</p>
+                        <div className="space-y-1">
+                          {entries.map(([sku, qty]) => (
+                            <div key={sku} className="flex justify-between text-xs">
+                              <span className="font-mono text-[var(--muted)]">{sku}</span>
+                              <span className="font-semibold text-green-600">+{qty} u.</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Formulari afegir línia OUT */}
                   {type === "out" && (
@@ -422,22 +472,11 @@ export default function InvoiceUploadModal() {
                   )}
 
                   {/* Llistat de línies afegides */}
-                  {(type === "in" ? inLines : outLines).length > 0 && (
+                  {/* Llistat OUT manual */}
+                  {type === "out" && outLines.length > 0 && (
                     <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] overflow-hidden">
-                      <div className="text-xs font-medium text-[var(--muted)] px-3 py-2 border-b border-[var(--border)]">
-                        Línies afegides
-                      </div>
-                      {type === "in" && inLines.map((l, i) => (
-                        <div key={i} className="flex items-center justify-between px-3 py-2 text-sm border-b border-[var(--border)] last:border-0">
-                          <span>{l.component.name}</span>
-                          <div className="flex items-center gap-3">
-                            <span className="font-semibold text-green-600">+{l.quantity}</span>
-                            <button onClick={() => setInLines(prev => prev.filter((_, j) => j !== i))}
-                              className="text-[var(--muted)] hover:text-red-500 text-xs">✕</button>
-                          </div>
-                        </div>
-                      ))}
-                      {type === "out" && outLines.map((l, i) => (
+                      <div className="text-xs font-medium text-[var(--muted)] px-3 py-2 border-b border-[var(--border)]">Línies afegides</div>
+                      {outLines.map((l, i) => (
                         <div key={i} className="flex items-center justify-between px-3 py-2 text-sm border-b border-[var(--border)] last:border-0">
                           <span>{l.product.code} — {l.product.name}</span>
                           <div className="flex items-center gap-3">
@@ -457,7 +496,7 @@ export default function InvoiceUploadModal() {
                     </button>
                     <button
                       onClick={() => handleSave(true)}
-                      disabled={(type === "in" ? inLines : outLines).length === 0}
+                      disabled={type === "out" ? outLines.length === 0 : !lineChecked.some((v, i) => v && lineMappedSku[i])}
                       className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
                       style={{ background: "var(--bumbba)" }}>
                       Guardar i actualitzar stock
@@ -480,7 +519,7 @@ export default function InvoiceUploadModal() {
                   <div className="text-4xl">✅</div>
                   <p className="font-medium">Factura guardada correctament</p>
                   <p className="text-xs text-[var(--muted)]">
-                    {(type === "in" ? inLines : outLines).length > 0
+                    {(type === "in" ? lineChecked.some(Boolean) : outLines.length > 0)
                       ? "Finances i inventari actualitzats."
                       : "Guardada a Finances. Inventari no modificat."}
                   </p>
