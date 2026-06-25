@@ -8,7 +8,7 @@ INSERT INTO components (sku, name, tenant_id, category_code, color_code, stock_a
 -- BUMBBA — FARCITS / NUCLIS
 ('FARCIT_GR',          'Farcit Gran',                        'BUMBBA', 'ALTRES',      NULL,   250),
 ('FARCIT_PT',          'Farcit Petit',                       'BUMBBA', 'ALTRES',      NULL,   272),
-('FARCIT_CR_M',        'Farcit Medi',                        'BUMBBA', 'ALTRES',      NULL,    37),
+('FARCIT_CR_M',        'Farcit Mitjà',                        'BUMBBA', 'ALTRES',      NULL,    37),
 ('FARCIT_RAC',         'Farcit Rinconera',                   'BUMBBA', 'ALTRES',      NULL,    14),
 ('HOTGLUE',            'Cola calenta (tires)',                'BUMBBA', 'ALTRES',      NULL,   300),
 ('BB_NUCLI_PVC',       'Nucli Pouf Light Green',             'BUMBBA', 'ALTRES',      'PVC',   16),

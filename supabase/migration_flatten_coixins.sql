@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Migració: Aplanar BOM coixins muntats → components raw directes
 -- Coixí Gran Muntat → Farcit Gran + Funda Coixí Gran + Bossa Buit
--- Coixí Mitjà Muntat → Farcit Medi + Funda Coixí Mitjà + Bossa Buit
+-- Coixí Mitjà Muntat → Farcit Mitjà + Funda Coixí Mitjà + Bossa Buit
 -- Coixí Rinconera Muntat → Farcit Rinconera + Funda Coixí Rinconera + Bossa Buit
 -- Coixí Petit Muntat → Farcit Petit + Funda Coixí Petit (sense Bossa)
 -- ============================================================================
@@ -21,7 +21,7 @@ WITH coixi_expansion AS (
     ('Coixí Gran Muntat',     'Farcit Gran',           1),
     ('Coixí Gran Muntat',     'Funda Coixí Gran',      1),
     ('Coixí Gran Muntat',     'Bossa Buit',            1),
-    ('Coixí Mitjà Muntat',    'Farcit Medi',           1),
+    ('Coixí Mitjà Muntat',    'Farcit Mitjà',           1),
     ('Coixí Mitjà Muntat',    'Funda Coixí Mitjà',     1),
     ('Coixí Mitjà Muntat',    'Bossa Buit',            1),
     ('Coixí Rinconera Muntat','Farcit Rinconera',      1),

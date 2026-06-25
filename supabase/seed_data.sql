@@ -50,7 +50,7 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- FARCITS / ALTRES
   ('FARCIT_GR',   'Farcit Gran',             'BUMBBA','ALTRES',     'E3', 250),
   ('FARCIT_PT',   'Farcit Petit',            'BUMBBA','ALTRES',     'E3', 272),
-  ('FARCIT_CR_M', 'Farcit Medi',             'BUMBBA','ALTRES',     'E3',  37),
+  ('FARCIT_CR_M', 'Farcit Mitjà',             'BUMBBA','ALTRES',     'E3',  37),
   ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  14),
   ('HOTGLUE',     'Cola Calenta',            'BUMBBA','ALTRES',      null, 300),
   ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  78),
@@ -94,7 +94,7 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('NUCLI_PUF',   'Nucli Pouf',   'SUNBBA','ALTRES', 'E1',  8),
   ('HOTGLUE',     'Cola Calenta', 'SUNBBA','ALTRES',  null, -4),
   ('FARCIT_GR',   'Farcit Gran',  'SUNBBA','ALTRES',  'E3',  0),
-  ('FARCIT_CR_M', 'Farcit Medi',  'SUNBBA','ALTRES',  'E3',  0),
+  ('FARCIT_CR_M', 'Farcit Mitjà',  'SUNBBA','ALTRES',  'E3',  0),
   ('FARCIT_PT',   'Farcit Petit', 'SUNBBA','ALTRES',  'E3',  0),
   -- ESTRUCTURES
   ('L_GR',  'L Gran',   'SUNBBA','ESTRUCTURES','E1', -4),
@@ -180,7 +180,7 @@ join lateral (values
   ('Caixa Bumbba',      1, 'E1', false),
   ('Pouf Enfundat',     1, 'E1', true),
   ('L Gran',            1, 'E1', true),
-  ('Farcit Medi',        1, 'E3', false),
+  ('Farcit Mitjà',        1, 'E3', false),
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Manual Bumbba ES',  1, 'E0', false),
@@ -199,7 +199,7 @@ join lateral (values
   ('Matalàs 160',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
   ('L Petita',           2, 'E1', true),
-  ('Farcit Medi',        2, 'E3', false),
+  ('Farcit Mitjà',        2, 'E3', false),
   ('Funda Coixí Mitjà',  2, 'E3', true),
   ('Farcit Petit',       2, 'E3', false),
   ('Funda Coixí Petit',  2, 'E3', true),
@@ -316,7 +316,7 @@ insert into bom (product_id, component_id, quantity, station, color_varies)
 select p.id, c.id, v.qty, v.st, v.cv
 from products p
 join lateral (values
-  ('Farcit Medi',        1, 'E3', false),
+  ('Farcit Mitjà',        1, 'E3', false),
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Caixa Plain',        1, 'E1', false)
@@ -397,7 +397,7 @@ join lateral (values
   ('Caixa Sunbba',       1, 'E1', false),
   ('Pouf Enfundat',      1, 'E1', true),
   ('L Gran',             1, 'E1', true),
-  ('Farcit Medi',        1, 'E3', false),
+  ('Farcit Mitjà',        1, 'E3', false),
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
@@ -415,7 +415,7 @@ join lateral (values
   ('Caixa Sunbba',       2, 'E1', false),
   ('Matalàs 160',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
-  ('Farcit Medi',        2, 'E3', false),
+  ('Farcit Mitjà',        2, 'E3', false),
   ('Funda Coixí Mitjà',  2, 'E3', true),
   ('Bossa Buit',         2, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
@@ -491,7 +491,7 @@ join lateral (values
   ('Caixa Sunbba',       4, 'E1', false),
   ('Matalàs 160',        4, 'E1', true),
   ('L Gran',             3, 'E1', true),
-  ('Farcit Medi',        3, 'E3', false),
+  ('Farcit Mitjà',        3, 'E3', false),
   ('Funda Coixí Mitjà',  3, 'E3', true),
   ('Bossa Buit',         3, 'E2', false),
   ('Funda Matalàs 160',  4, 'E1', true)
@@ -516,7 +516,7 @@ insert into bom (product_id, component_id, quantity, station, color_varies)
 select p.id, c.id, v.qty, v.st, v.cv
 from products p
 join lateral (values
-  ('Farcit Medi',        1, 'E3', false),
+  ('Farcit Mitjà',        1, 'E3', false),
   ('Funda Coixí Mitjà',  1, 'E3', true),
   ('Bossa Buit',         1, 'E2', false),
   ('Caixa Sunbba',       1, 'E1', false)
