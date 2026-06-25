@@ -5,14 +5,14 @@
 -- 1. Crear components SHARED (suma stocks de les dues marques)
 INSERT INTO components (tenant_id, sku, name, category_code, station, stock_actual)
 VALUES (
-  'SHARED', 'L_GR', 'L Gran', 'LAMES', 'E1',
+  'SHARED', 'L_GR', 'L Gran', 'ESTRUCTURES', 'E1',
   COALESCE((SELECT SUM(stock_actual) FROM components WHERE sku = 'L_GR'), 0)
 )
 ON CONFLICT (tenant_id, sku) DO UPDATE SET stock_actual = excluded.stock_actual;
 
 INSERT INTO components (tenant_id, sku, name, category_code, station, stock_actual)
 VALUES (
-  'SHARED', 'L_PT', 'L Petita', 'LAMES', 'E1',
+  'SHARED', 'L_PT', 'L Petita', 'ESTRUCTURES', 'E1',
   COALESCE((SELECT SUM(stock_actual) FROM components WHERE sku = 'L_PT'), 0)
 )
 ON CONFLICT (tenant_id, sku) DO UPDATE SET stock_actual = excluded.stock_actual;
