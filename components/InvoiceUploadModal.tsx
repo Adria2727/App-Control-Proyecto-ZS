@@ -201,7 +201,7 @@ export default function InvoiceUploadModal() {
               .eq("product_id", line.product.id);
 
             for (const bom of bomLines ?? []) {
-              const comp = bom.component as { id: number };
+              const comp = bom.component as unknown as { id: number };
               const delta = Math.round(Number(bom.quantity) * line.quantity);
               await supabase.rpc("adjust_stock", { comp_id: comp.id, delta: -delta });
               await supabase.from("stock_movements").insert({
