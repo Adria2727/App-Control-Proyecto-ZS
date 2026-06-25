@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DeliveryNote } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 
@@ -15,6 +15,15 @@ function daysSince(dateStr: string) {
 export default function DeliveryNotesTable({ notes: initialNotes }: { notes: DeliveryNote[] }) {
   const [notes, setNotes] = useState<DeliveryNote[]>(initialNotes);
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [amountSearch, setAmountSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    return notes.filter(n => {
+      if (amountSearch && n.base_amount != null &&
+        !String(n.base_amount).includes(amountSearch.replace(",", "."))) return false;
+      return true;
+    });
+  }, [notes, amountSearch]);
 
   async function markInvoiced(id: number) {
     setLoadingId(id);
@@ -25,6 +34,7 @@ export default function DeliveryNotesTable({ notes: initialNotes }: { notes: Del
 
   const pending = notes.filter(n => n.status === "pending_invoice");
   const invoiced = notes.filter(n => n.status === "invoiced");
+  const hasFilter = !!amountSearch;
 
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
@@ -33,6 +43,24 @@ export default function DeliveryNotesTable({ notes: initialNotes }: { notes: Del
           <h2 className="font-semibold">Albarans de compra</h2>
           <p className="text-xs text-[var(--muted)] mt-0.5">{pending.length} pendents de factura · {invoiced.length} facturats</p>
         </div>
+      </div>
+
+      <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--background)] flex flex-wrap gap-3 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--muted)] font-medium">Import</label>
+          <input
+            type="text"
+            placeholder="ex: 3702.07"
+            value={amountSearch}
+            onChange={(e) => setAmountSearch(e.target.value)}
+            className="text-sm border border-[var(--border)] rounded-lg px-3 py-1.5 bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--bumbba)] w-36"
+          />
+        </div>
+        {hasFilter && (
+          <button onClick={() => setAmountSearch("")} className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline pb-1.5">
+            Netejar
+          </button>
+        )}
       </div>
 
       <table className="w-full text-sm">
@@ -48,10 +76,10 @@ export default function DeliveryNotesTable({ notes: initialNotes }: { notes: Del
           </tr>
         </thead>
         <tbody>
-          {notes.length === 0 && (
+          {filtered.length === 0 && (
             <tr><td colSpan={7} className="px-3 py-8 text-center text-[var(--muted)]">Cap albarà registrat</td></tr>
           )}
-          {notes.map(note => {
+          {filtered.map(note => {
             const days = daysSince(note.created_at);
             const isLate = note.status === "pending_invoice" && days >= 3;
             return (

@@ -42,6 +42,7 @@ export default function InvoicesInTable({
   const [supplierFilter, setSupplierFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [amountSearch, setAmountSearch] = useState("");
 
   const todayDate = new Date(today);
 
@@ -50,14 +51,15 @@ export default function InvoicesInTable({
       if (supplierFilter && !inv.supplier.toLowerCase().includes(supplierFilter.toLowerCase())) return false;
       if (dateFrom && inv.invoice_date < dateFrom) return false;
       if (dateTo && inv.invoice_date > dateTo) return false;
+      if (amountSearch && !String(inv.total_amount).includes(amountSearch.replace(",", "."))) return false;
       return true;
     });
-  }, [invoicesIn, supplierFilter, dateFrom, dateTo]);
+  }, [invoicesIn, supplierFilter, dateFrom, dateTo, amountSearch]);
 
   const filteredTotal = filtered.reduce((s, i) => s + i.total_amount, 0);
   const filteredBase  = filtered.reduce((s, i) => s + i.base_amount, 0);
 
-  const hasFilter = supplierFilter || dateFrom || dateTo;
+  const hasFilter = supplierFilter || dateFrom || dateTo || amountSearch;
 
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
@@ -99,9 +101,19 @@ export default function InvoicesInTable({
             className="text-sm border border-[var(--border)] rounded-lg px-3 py-1.5 bg-[var(--card)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--bumbba)]"
           />
         </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--muted)] font-medium">Import total</label>
+          <input
+            type="text"
+            placeholder="ex: 4479.50"
+            value={amountSearch}
+            onChange={(e) => setAmountSearch(e.target.value)}
+            className="text-sm border border-[var(--border)] rounded-lg px-3 py-1.5 bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--bumbba)] w-36"
+          />
+        </div>
         {hasFilter && (
           <button
-            onClick={() => { setSupplierFilter(""); setDateFrom(""); setDateTo(""); }}
+            onClick={() => { setSupplierFilter(""); setDateFrom(""); setDateTo(""); setAmountSearch(""); }}
             className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline pb-1.5"
           >
             Netejar filtres
