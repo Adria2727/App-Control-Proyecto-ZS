@@ -168,10 +168,10 @@ insert into components (sku, name, tenant_id, category_code, color_code, station
   ('FARCIT_PT','Farcit Petit','SUNBBA','ALTRES',null,'E3',0),
   -- ESTRUCTURES "L" (prov. Lacats V.F) — ~0 a tots els colors
   ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC04','E1',0),
-  ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC37','E1',0),
+  ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC37','E1',-4),
   ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC82','E1',0),
   ('L_GR','L Gran','SUNBBA','ESTRUCTURES','PC99','E1',0),
-  ('L_PT','L Petita','SUNBBA','ESTRUCTURES','PC04','E1',-4),
+  ('L_PT','L Petita','SUNBBA','ESTRUCTURES','PC04','E1',0),
   ('L_PT','L Petita','SUNBBA','ESTRUCTURES','PC37','E1',0),
   ('L_PT','L Petita','SUNBBA','ESTRUCTURES','PC82','E1',0),
   ('L_PT','L Petita','SUNBBA','ESTRUCTURES','PC99','E1',0),
