@@ -13,7 +13,7 @@ export default async function ProductesPage() {
     supabase.from("products").select("id,code,name,tenant_id,family,bom_active,sold_on_web").order("tenant_id").order("family").order("code"),
     supabase.from("bom").select("id,product_id,component_id,quantity,station,color_varies"),
     supabase.from("prices").select("id,product_id,price_type,size,amount,vat_included"),
-    supabase.from("components").select("id,sku,name,category_code,color_code,station"),
+    supabase.from("components").select("id,sku,name,category_code,station"),
   ]);
 
   const componentMap = Object.fromEntries((componentsData ?? []).map((c) => [c.id, c]));
