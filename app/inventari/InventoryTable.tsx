@@ -1,13 +1,37 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { Component } from "@/lib/types";
 
-export default function InventoryTable({ components }: { components: Component[] }) {
+export default function InventoryTable({ components: initialComponents }: { components: Component[] }) {
+  const [components, setComponents] = useState<Component[]>(initialComponents);
   const [tenant, setTenant] = useState<string>("ALL");
   const [category, setCategory] = useState<string>("ALL");
   const [query, setQuery] = useState("");
   const [onlyIssues, setOnlyIssues] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function saveCost(id: number) {
+    const parsed = parseFloat(editValue.replace(",", "."));
+    if (isNaN(parsed) || parsed < 0) { setEditingId(null); return; }
+    await fetch("/api/update-cost", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ component_id: id, cost_unitari: parsed }),
+    });
+    setComponents((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, cost_unitari: parsed } : c))
+    );
+    setEditingId(null);
+  }
+
+  function startEdit(c: Component) {
+    setEditingId(c.id);
+    setEditValue(c.cost_unitari != null ? String(c.cost_unitari) : "");
+    setTimeout(() => inputRef.current?.select(), 0);
+  }
 
   const categories = useMemo(
     () => Array.from(new Set(components.map((c) => c.category_code))).sort(),
@@ -107,8 +131,29 @@ export default function InventoryTable({ components }: { components: Component[]
                       style={{ color: c.stock_actual < 0 ? "var(--negative)" : undefined }}>
                     {c.stock_actual}
                   </td>
-                  <td className="px-3 py-2 text-right text-[var(--muted)] tabular-nums">
-                    {c.cost_unitari != null ? fmtEur(c.cost_unitari) : "—"}
+                  <td
+                    className="px-3 py-2 text-right tabular-nums cursor-pointer hover:bg-[var(--border)] transition-colors"
+                    title="Clic per editar"
+                    onClick={() => startEdit(c)}
+                  >
+                    {editingId === c.id ? (
+                      <input
+                        ref={inputRef}
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={() => saveCost(c.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveCost(c.id);
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                        className="w-20 text-right bg-[var(--background)] border border-[var(--border)] rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--bumbba)]"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <span className="text-[var(--muted)]">
+                        {c.cost_unitari != null ? fmtEur(c.cost_unitari) : "—"}
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums font-medium"
                       style={{ color: valor != null && valor < 0 ? "var(--negative)" : undefined }}>
