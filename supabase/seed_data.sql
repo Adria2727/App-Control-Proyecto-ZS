@@ -309,6 +309,8 @@ select p.id, c.id, v.qty, v.station, v.cv
 from products p
 join lateral (values
   ('Matalàs 190','PGC', 2, 'E1', true),
+  ('L Gran','PGC', 2, 'E1', true),
+  ('L Petita','PGC', 2, 'E1', true),
   ('Coixí Gran Muntat','PGC', 2, 'KANBAN', true),
   ('Caixa Bumbba', null::text, 2, 'E1', false),
   ('Potes Blanques', null, 12, 'E0', true),
@@ -519,6 +521,7 @@ join lateral (values
   ('Caixa Sunbba', null::text, 2, 'E1', false),
   ('Matalàs 190','PC04', 2, 'E1', true),
   ('L Gran','PC04', 2, 'E1', true),
+  ('L Petita','PC04', 2, 'E1', true),
   ('Coixí Gran Muntat','PC04', 2, 'KANBAN', true),
   ('Potes Blanques', null, 12, 'E0', true),
   ('Manual Sunbba', null, 1, 'E0', false),
