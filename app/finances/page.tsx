@@ -8,7 +8,7 @@ import DeliveryNotesTable from "@/components/DeliveryNotesTable";
 
 export const dynamic = "force-dynamic";
 
-const TODAY = new Date("2026-06-18");
+const TODAY = new Date();
 
 function fmt(n: number) {
   return n.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
@@ -231,7 +231,7 @@ export default async function FinancesPage() {
       <InvoicesInTable
         invoicesIn={invoicesIn}
         totalCompres={totalCompres}
-        today="2026-06-18"
+        today={new Date().toISOString().split("T")[0]}
       />
 
     </div>

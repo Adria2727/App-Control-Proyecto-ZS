@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const TODAY = new Date("2026-06-19");
+const TODAY = new Date();
 
 function fmt(n: number, decimals = 0) {
   return n.toLocaleString("ca-ES", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + " €";
