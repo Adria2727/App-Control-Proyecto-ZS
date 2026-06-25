@@ -48,7 +48,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('FUN_PUF',     'Funda Pouf',              'BUMBBA','TELA',       'E1',   0),
   ('FUN_PUF_INT', 'Funda Interior Pouf',     'BUMBBA','TELA',       'E1',   0),
   -- FARCITS / ALTRES
-  ('FARCIT_RAC',  'Farcit Rinconera',        'BUMBBA','ALTRES',     'E3',  18),
   ('NUCLI_PUF',   'Nucli Pouf',             'BUMBBA','ALTRES',      'E1',  18),
   -- ESTRUCTURES
   ('BRAC',  'Braç',     'BUMBBA','ESTRUCTURES','E1',  28),
@@ -116,6 +115,7 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   ('HOTGLUE','Cola Calenta','SHARED','ALTRES',      null, 250),
   ('ETIQ',   'Etiqueta',    'SHARED','EMBALATGE',   'E0', 700),
   ('FARCIT_GR',   'Farcit Gran',  'SHARED','ALTRES',     'E3', 156),
+  ('FARCIT_RAC',  'Farcit Rinconera','SHARED','ALTRES',   'E3',  18),
   ('FARCIT_CR_M', 'Farcit Mitjà',  'SHARED','ALTRES',     'E3',  40),
   ('FARCIT_PT',   'Farcit Petit', 'SHARED','ALTRES',     'E3', 390),
   ('BOSSA','Bossa Buit','SHARED','EMBALATGE',  'E2', 300)
