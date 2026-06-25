@@ -5,7 +5,7 @@
 -- ============================================================================
 
 -- 1. Afegir tenant SHARED
-insert into tenants (id, name, website, active)
+insert into tenants (id, name, website, is_mature)
 values ('SHARED', 'Compartit', null, true)
 on conflict (id) do nothing;
 
