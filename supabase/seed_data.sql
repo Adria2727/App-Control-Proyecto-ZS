@@ -61,11 +61,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- MATALASSOS
   ('MAT_190','Matalàs 190','BUMBBA','MATALASSOS','E1', 131),
   ('MAT_160','Matalàs 160','BUMBBA','MATALASSOS','E1',  55),
-  -- COIXINS MUNTATS (buffer KANBAN)
-  ('CX_GR', 'Coixí Gran Muntat',      'BUMBBA','COIXINS','KANBAN', 0),
-  ('CX_M',  'Coixí Mitjà Muntat',     'BUMBBA','COIXINS','KANBAN', 0),
-  ('CX_PT', 'Coixí Petit Muntat',     'BUMBBA','COIXINS','KANBAN', 0),
-  ('CX_RAC','Coixí Rinconera Muntat', 'BUMBBA','COIXINS','KANBAN', 0),
   -- WIP
   ('POUF_ENF','Pouf Enfundat', 'BUMBBA','ALTRES',     'E1', 0),
   ('BRAC_ENF','Braç Enfundat', 'BUMBBA','ESTRUCTURES','E1', 0),
@@ -107,10 +102,6 @@ insert into components (sku, name, tenant_id, category_code, station, stock_actu
   -- MATALASSOS
   ('MAT_190','Matalàs 190','SUNBBA','MATALASSOS','E1', 101),
   ('MAT_160','Matalàs 160','SUNBBA','MATALASSOS','E1',   4),
-  -- COIXINS MUNTATS
-  ('CX_GR','Coixí Gran Muntat', 'SUNBBA','COIXINS','KANBAN', 0),
-  ('CX_M', 'Coixí Mitjà Muntat','SUNBBA','COIXINS','KANBAN', 0),
-  ('CX_PT','Coixí Petit Muntat','SUNBBA','COIXINS','KANBAN', 0),
   -- WIP
   ('POUF_ENF','Pouf Enfundat','SUNBBA','ALTRES','E1', 0),
   -- EMBALATGE
@@ -189,7 +180,9 @@ join lateral (values
   ('Caixa Bumbba',      1, 'E1', false),
   ('Pouf Enfundat',     1, 'E1', true),
   ('L Gran',            1, 'E1', true),
-  ('Coixí Mitjà Muntat',1, 'KANBAN', true),
+  ('Farcit Medi',        1, 'E3', false),
+  ('Funda Coixí Mitjà',  1, 'E3', true),
+  ('Bossa Buit',         1, 'E2', false),
   ('Manual Bumbba ES',  1, 'E0', false),
   ('Etiqueta Bumbba',   1, 'E0', false),
   ('Cola Calenta',      1, 'E1', false)
@@ -206,8 +199,11 @@ join lateral (values
   ('Matalàs 160',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
   ('L Petita',           2, 'E1', true),
-  ('Coixí Mitjà Muntat', 2, 'KANBAN', true),
-  ('Coixí Petit Muntat', 2, 'KANBAN', true),
+  ('Farcit Medi',        2, 'E3', false),
+  ('Funda Coixí Mitjà',  2, 'E3', true),
+  ('Farcit Petit',       2, 'E3', false),
+  ('Funda Coixí Petit',  2, 'E3', true),
+  ('Bossa Buit',         2, 'E2', false),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 160',  2, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -222,7 +218,9 @@ join lateral (values
   ('Matalàs 190',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
   ('L Petita',           2, 'E1', true),
-  ('Coixí Gran Muntat',  2, 'KANBAN', true),
+  ('Farcit Gran',        2, 'E3', false),
+  ('Funda Coixí Gran',   2, 'E3', true),
+  ('Bossa Buit',         2, 'E2', false),
   ('Caixa Bumbba',       2, 'E1', false),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Etiqueta Bumbba',    2, 'E0', false),
@@ -241,8 +239,11 @@ join lateral (values
   ('Matalàs 190',        4, 'E1', true),
   ('L Gran',             3, 'E1', true),
   ('L Petita',           2, 'E1', true),
-  ('Coixí Gran Muntat',  3, 'KANBAN', true),
-  ('Coixí Petit Muntat', 2, 'KANBAN', true),
+  ('Farcit Gran',        3, 'E3', false),
+  ('Funda Coixí Gran',   3, 'E3', true),
+  ('Farcit Petit',       2, 'E3', false),
+  ('Funda Coixí Petit',  2, 'E3', true),
+  ('Bossa Buit',         3, 'E2', false),
   ('Manual Bumbba ES',   1, 'E0', false),
   ('Funda Matalàs 190',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -258,9 +259,13 @@ join lateral (values
   ('Matalàs 190',            4, 'E1', true),
   ('L Gran',                 5, 'E1', true),
   ('L Petita',               2, 'E1', true),
-  ('Coixí Gran Muntat',      3, 'KANBAN', true),
-  ('Coixí Petit Muntat',     2, 'KANBAN', true),
-  ('Coixí Rinconera Muntat', 1, 'KANBAN', true),
+  ('Farcit Gran',            3, 'E3', false),
+  ('Funda Coixí Gran',       3, 'E3', true),
+  ('Farcit Petit',           2, 'E3', false),
+  ('Funda Coixí Petit',      2, 'E3', true),
+  ('Farcit Rinconera',       1, 'E3', false),
+  ('Funda Coixí Rinconera',  1, 'E3', true),
+  ('Bossa Buit',             4, 'E2', false),
   ('Manual Bumbba ES',       1, 'E0', false),
   ('Funda Matalàs 190',      4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
@@ -392,7 +397,9 @@ join lateral (values
   ('Caixa Sunbba',       1, 'E1', false),
   ('Pouf Enfundat',      1, 'E1', true),
   ('L Gran',             1, 'E1', true),
-  ('Coixí Mitjà Muntat', 1, 'KANBAN', true),
+  ('Farcit Medi',        1, 'E3', false),
+  ('Funda Coixí Mitjà',  1, 'E3', true),
+  ('Bossa Buit',         1, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    1, 'E0', false),
   ('Cola Calenta',       1, 'E1', false)
@@ -408,7 +415,9 @@ join lateral (values
   ('Caixa Sunbba',       2, 'E1', false),
   ('Matalàs 160',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
-  ('Coixí Mitjà Muntat', 2, 'KANBAN', true),
+  ('Farcit Medi',        2, 'E3', false),
+  ('Funda Coixí Mitjà',  2, 'E3', true),
+  ('Bossa Buit',         2, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
@@ -426,7 +435,9 @@ join lateral (values
   ('Matalàs 190',        2, 'E1', true),
   ('L Gran',             2, 'E1', true),
   ('L Petita',           2, 'E1', true),
-  ('Coixí Gran Muntat',  2, 'KANBAN', true),
+  ('Farcit Gran',        2, 'E3', false),
+  ('Funda Coixí Gran',   2, 'E3', true),
+  ('Bossa Buit',         2, 'E2', false),
   ('Manual Sunbba',      1, 'E0', false),
   ('Etiqueta Sunbba',    2, 'E0', false),
   ('Cola Calenta',       2, 'E1', false),
@@ -444,7 +455,9 @@ join lateral (values
   ('Matalàs 190',       2, 'E1', true),
   ('Matalàs 160',       2, 'E1', true),
   ('L Gran',            3, 'E1', true),
-  ('Coixí Gran Muntat', 3, 'KANBAN', true),
+  ('Farcit Gran',       3, 'E3', false),
+  ('Funda Coixí Gran',  3, 'E3', true),
+  ('Bossa Buit',        3, 'E2', false),
   ('Manual Sunbba',     1, 'E0', false),
   ('Etiqueta Sunbba',   4, 'E0', false),
   ('Cola Calenta',      4, 'E1', false),
@@ -462,7 +475,9 @@ join lateral (values
   ('Caixa Sunbba',      4, 'E1', false),
   ('Matalàs 190',       4, 'E1', true),
   ('L Gran',            3, 'E1', true),
-  ('Coixí Gran Muntat', 3, 'KANBAN', true),
+  ('Farcit Gran',       3, 'E3', false),
+  ('Funda Coixí Gran',  3, 'E3', true),
+  ('Bossa Buit',        3, 'E2', false),
   ('Funda Matalàs 190', 4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname
@@ -476,7 +491,9 @@ join lateral (values
   ('Caixa Sunbba',       4, 'E1', false),
   ('Matalàs 160',        4, 'E1', true),
   ('L Gran',             3, 'E1', true),
-  ('Coixí Mitjà Muntat', 3, 'KANBAN', true),
+  ('Farcit Medi',        3, 'E3', false),
+  ('Funda Coixí Mitjà',  3, 'E3', true),
+  ('Bossa Buit',         3, 'E2', false),
   ('Funda Matalàs 160',  4, 'E1', true)
 ) as v(cname,qty,st,cv) on true
 join components c on c.tenant_id='SUNBBA' and c.name=v.cname
