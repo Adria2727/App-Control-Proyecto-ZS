@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { InvoiceIn } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
 
 function fmt(n: number) {
   return n.toLocaleString("ca-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
@@ -39,6 +40,17 @@ export default function InvoicesInTable({
   totalCompres: number;
   today: string;
 }) {
+  const [invoices, setInvoices] = useState(invoicesIn);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  async function deleteInvoice(id: number) {
+    if (!confirm("Eliminar aquesta factura?")) return;
+    setDeletingId(id);
+    await supabase.from("invoices_in").delete().eq("id", id);
+    setInvoices(prev => prev.filter(i => i.id !== id));
+    setDeletingId(null);
+  }
+
   const [supplierFilter, setSupplierFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -48,7 +60,7 @@ export default function InvoicesInTable({
   const todayDate = new Date(today);
 
   const filtered = useMemo(() => {
-    return invoicesIn.filter((inv) => {
+    return invoices.filter((inv) => {
       if (supplierFilter && !inv.supplier.toLowerCase().includes(supplierFilter.toLowerCase())) return false;
       if (dateFrom && inv.invoice_date < dateFrom) return false;
       if (dateTo && inv.invoice_date > dateTo) return false;
@@ -56,12 +68,13 @@ export default function InvoicesInTable({
       if (baseSearch && !String(inv.base_amount).includes(baseSearch.replace(",", "."))) return false;
       return true;
     });
-  }, [invoicesIn, supplierFilter, dateFrom, dateTo, amountSearch, baseSearch]);
+  }, [invoices, supplierFilter, dateFrom, dateTo, amountSearch, baseSearch]);
 
   const filteredTotal = filtered.reduce((s, i) => s + i.total_amount, 0);
   const filteredBase  = filtered.reduce((s, i) => s + i.base_amount, 0);
 
   const hasFilter = supplierFilter || dateFrom || dateTo || amountSearch || baseSearch;
+  const totalInvoices = invoices.length;
 
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
@@ -133,7 +146,7 @@ export default function InvoicesInTable({
         )}
         {hasFilter && (
           <span className="text-xs text-[var(--muted)] pb-1.5 ml-auto">
-            {filtered.length} de {invoicesIn.length} factures
+            {filtered.length} de {totalInvoices} factures
           </span>
         )}
       </div>
@@ -149,12 +162,13 @@ export default function InvoicesInTable({
             <th className="px-3 py-2 text-right">Total (IVA)</th>
             <th className="px-3 py-2">Venciment</th>
             <th className="px-3 py-2">Estat</th>
+            <th className="px-3 py-2 w-8"></th>
           </tr>
         </thead>
         <tbody>
           {filtered.length === 0 ? (
             <tr>
-              <td colSpan={8} className="px-3 py-8 text-center text-[var(--muted)] text-sm">
+              <td colSpan={9} className="px-3 py-8 text-center text-[var(--muted)] text-sm">
                 Cap factura coincideix amb els filtres aplicats.
               </td>
             </tr>
@@ -178,6 +192,16 @@ export default function InvoicesInTable({
                   <td className="px-3 py-2">
                     <StatusBadge status={isOverdue ? "overdue" : inv.status} />
                   </td>
+                  <td className="px-3 py-2 text-right">
+                    <button
+                      onClick={() => deleteInvoice(inv.id)}
+                      disabled={deletingId === inv.id}
+                      title="Eliminar factura"
+                      className="text-[var(--muted)] hover:text-[var(--negative)] transition-colors disabled:opacity-40 text-base leading-none"
+                    >
+                      {deletingId === inv.id ? "…" : "×"}
+                    </button>
+                  </td>
                 </tr>
               );
             })
@@ -185,12 +209,12 @@ export default function InvoicesInTable({
         </tbody>
         <tfoot>
           <tr className="bg-[var(--background)] border-t-2 border-[var(--border)]">
-            <td colSpan={4} className="px-3 py-2 font-semibold text-[var(--muted)]">
+            <td colSpan={5} className="px-3 py-2 font-semibold text-[var(--muted)]">
               {hasFilter ? `TOTAL FILTRAT` : "TOTAL"}
             </td>
             <td className="px-3 py-2 text-right tabular-nums font-semibold">{fmt(filteredBase)}</td>
             <td className="px-3 py-2 text-right tabular-nums font-bold">{fmt(filteredTotal)}</td>
-            <td colSpan={2} />
+            <td colSpan={3} />
           </tr>
         </tfoot>
       </table>
