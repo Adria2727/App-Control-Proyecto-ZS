@@ -42,7 +42,7 @@ export default async function Dashboard() {
   const pagat         = inn.filter((i: any) => i.status === "paid").reduce((s: number, i: any) => s + i.total_amount, 0);
   const pendentPagar  = inn.filter((i: any) => i.status !== "paid").reduce((s: number, i: any) => s + i.total_amount, 0);
 
-  // ── MARGE BRUT (sobre base imposable) ─────────────────────
+  // ── MARGE: Vendes / (Compres − Valor Inventari) ───────────
   const margeBase    = vendesBase - compresBase;
   const margePct     = vendesBase > 0 ? (margeBase / vendesBase) * 100 : 0;
 
@@ -73,7 +73,12 @@ export default async function Dashboard() {
 
   const negatives = comps.filter((c: any) => c.stock_actual < 0);
 
-  const margeColor = margePct >= 30 ? "#16a34a" : margePct >= 15 ? "#b45309" : "#dc2626";
+  const netCost    = compresBase - valorInventari;
+  const margeRatio = netCost > 0 ? vendesBase / netCost : null;
+
+  const margeColor = margeRatio != null
+    ? (margeRatio >= 2 ? "#16a34a" : margeRatio >= 1 ? "#b45309" : "#dc2626")
+    : (margePct >= 30 ? "#16a34a" : margePct >= 15 ? "#b45309" : "#dc2626");
   const tresoreriaColor = tresoreriaNet >= 0 ? "#16a34a" : "#dc2626";
 
   return (
@@ -113,14 +118,15 @@ export default async function Dashboard() {
           </p>
         </div>
 
-        {/* Marge brut */}
+        {/* Marge */}
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Marge brut</p>
+          <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Marge</p>
           <p className="text-2xl font-bold tabular-nums mt-1" style={{ color: margeColor }}>
-            {fmt(margeBase, 0)}
+            {margeRatio != null ? `${margeRatio.toFixed(2)}x` : "—"}
           </p>
-          <p className="text-xs mt-1 font-semibold" style={{ color: margeColor }}>
-            {margePct.toFixed(1)}% sobre vendes
+          <p className="text-xs mt-1 text-[var(--muted)]">Vendes / (Compres − Inventari)</p>
+          <p className="text-xs mt-0.5 font-medium" style={{ color: margeColor }}>
+            {fmt(vendesBase, 0)} / {fmt(netCost, 0)}
           </p>
         </div>
 
@@ -171,10 +177,10 @@ export default async function Dashboard() {
           <h2 className="font-semibold mb-3">Diagnòstic ràpid</h2>
           <div className="space-y-3">
             <Indicador
-              label="Marge brut"
-              ok={margePct >= 20}
-              warn={margePct >= 10 && margePct < 20}
-              text={`${margePct.toFixed(1)}% — ${margePct >= 30 ? "molt bo" : margePct >= 20 ? "acceptable" : margePct >= 10 ? "baix" : "crític"}`}
+              label="Marge"
+              ok={margeRatio != null && margeRatio >= 2}
+              warn={margeRatio != null && margeRatio >= 1 && margeRatio < 2}
+              text={margeRatio != null ? `${margeRatio.toFixed(2)}x — ${margeRatio >= 2 ? "molt bo" : margeRatio >= 1 ? "acceptable" : "crític"}` : "sense dades"}
             />
             <Indicador
               label="Tresoreria"
