@@ -9,6 +9,7 @@ export default function InventoryTable({ components: initialComponents }: { comp
   const [category, setCategory] = useState<string>("ALL");
   const [query, setQuery] = useState("");
   const [onlyIssues, setOnlyIssues] = useState(false);
+  const [onlyZeroCost, setOnlyZeroCost] = useState(false);
   const [editingCostId, setEditingCostId] = useState<number | null>(null);
   const [editingStockId, setEditingStockId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -60,13 +61,14 @@ export default function InventoryTable({ components: initialComponents }: { comp
       .filter((c) => (tenant === "ALL" ? true : c.tenant_id === tenant))
       .filter((c) => (category === "ALL" ? true : c.category_code === category))
       .filter((c) => (onlyIssues ? c.stock_actual <= 0 : true))
+      .filter((c) => (onlyZeroCost ? (c.cost_unitari == null || c.cost_unitari === 0) : true))
       .filter((c) =>
         query.trim()
           ? `${c.name} ${c.sku}`.toLowerCase().includes(query.toLowerCase())
           : true
       )
       .sort((a, b) => a.stock_actual - b.stock_actual);
-  }, [components, tenant, category, query, onlyIssues]);
+  }, [components, tenant, category, query, onlyIssues, onlyZeroCost]);
 
   const totalValor = useMemo(
     () => rows.reduce((acc, c) => acc + (c.cost_unitari ?? 0) * c.stock_actual, 0),
@@ -114,6 +116,10 @@ export default function InventoryTable({ components: initialComponents }: { comp
         <label className="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer">
           <input type="checkbox" checked={onlyIssues} onChange={(e) => setOnlyIssues(e.target.checked)} />
           Només ≤ 0
+        </label>
+        <label className="flex items-center gap-2 text-sm text-[var(--muted)] cursor-pointer">
+          <input type="checkbox" checked={onlyZeroCost} onChange={(e) => setOnlyZeroCost(e.target.checked)} />
+          Preu = 0
         </label>
       </div>
 
